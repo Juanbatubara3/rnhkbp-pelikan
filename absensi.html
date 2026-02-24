@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kelola Absensi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container-fluid">
+    <span class="navbar-brand">Kelola Absensi</span>
+    <a href="dashboard.html" class="btn btn-light">Kembali</a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+  <div class="card p-3 mb-4">
+    <h5>Input Absensi</h5>
+
+    <select id="anggotaSelect" class="form-control mb-2"></select>
+
+    <input type="date" id="tanggal" class="form-control mb-2">
+
+    <select id="status" class="form-control mb-2">
+      <option value="Hadir">Hadir</option>
+      <option value="Izin">Izin</option>
+      <option value="Sakit">Sakit</option>
+      <option value="Alpha">Alpha</option>
+    </select>
+
+    <button onclick="simpanAbsensi()" class="btn btn-primary">Simpan</button>
+  </div>
+
+  <div class="card p-3">
+    <h5>Riwayat Absensi</h5>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Kategori</th>
+          <th>Tanggal</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="dataAbsensi"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCwQGsFPBIs_gk0Xc1hscpG-7n6M16gqWc",
+  authDomain: "rnhkbp-pelikan.firebaseapp.com",
+  projectId: "rnhkbp-pelikan",
+  storageBucket: "rnhkbp-pelikan.firebasestorage.app",
+  messagingSenderId: "202813062166",
+  appId: "1:202813062166:web:eb3d963d5965a5e6f48937"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+firebase.auth().onAuthStateChanged(user=>{
+  if(!user){
+    window.location.href="index.html";
+  }
+});
+
+// Load anggota ke dropdown
+db.collection("anggota").onSnapshot(snapshot=>{
+  let options="";
+  snapshot.forEach(doc=>{
+    const data = doc.data();
+    options += `<option value="${doc.id}|${data.nama}|${data.kategori}">
+      ${data.nama} (${data.kategori})
+    </option>`;
+  });
+  document.getElementById("anggotaSelect").innerHTML = options;
+});
+
+// Simpan absensi
+function simpanAbsensi(){
+  const anggotaData = document.getElementById("anggotaSelect").value.split("|");
+  const anggotaId = anggotaData[0];
+  const nama = anggotaData[1];
+  const kategori = anggotaData[2];
+  const tanggal = document.getElementById("tanggal").value;
+  const status = document.getElementById("status").value;
+
+  db.collection("absensi").add({
+    anggotaId,
+    nama,
+    kategori,
+    tanggal,
+    status
+  }).then(()=>{
+    alert("Absensi berhasil disimpan");
+  }).catch(e=>{
+    alert("Error: " + e.message);
+  });
+}
+
+// Tampilkan riwayat
+db.collection("absensi").orderBy("tanggal","desc")
+.onSnapshot(snapshot=>{
+  let html="";
+  snapshot.forEach(doc=>{
+    const data = doc.data();
+    html += `
+      <tr>
+        <td>${data.nama}</td>
+        <td>${data.kategori}</td>
+        <td>${data.tanggal}</td>
+        <td>${data.status}</td>
+      </tr>
+    `;
+  });
+  document.getElementById("dataAbsensi").innerHTML = html;
+});
+</script>
+
+</body>
+</html>
