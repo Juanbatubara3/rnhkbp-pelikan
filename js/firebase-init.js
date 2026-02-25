@@ -16,4 +16,4 @@ const app = initializeApp(firebaseConfig);
 
 window.auth = getAuth(app);
 window.db = getFirestore(app);
-window.storage = getStorage(app);
+window.storage = getStorage(app);  
