@@ -15,11 +15,9 @@
 
 <div class="container mt-4">
 
-  <!-- FORM -->
+  <!-- FORM INPUT -->
   <div class="card p-3 mb-4 shadow">
-    <h5>Input Absensi</h5>
-
-    <input type="hidden" id="editId">
+    <h5>Input Absensi Kegiatan</h5>
 
     <select id="kegiatan" class="form-control mb-2">
       <option value="Partangiangan">Partangiangan</option>
@@ -30,6 +28,7 @@
     <select id="anggotaSelect" class="form-control mb-2"></select>
 
     <input type="date" id="tanggal" class="form-control mb-2" onchange="isiHari()">
+
     <input type="text" id="hari" class="form-control mb-2" placeholder="Hari" readonly>
 
     <select id="status" class="form-control mb-2">
@@ -40,24 +39,6 @@
     </select>
 
     <button onclick="simpanAbsensi()" class="btn btn-primary">Simpan</button>
-  </div>
-
-  <!-- TOTAL -->
-  <div class="row mb-3">
-    <div class="col-md-6">
-      <div class="card p-3 bg-light">
-        <h6>Naposo</h6>
-        <div>Hadir: <span id="naposoHadir">0</span></div>
-        <div>Absen: <span id="naposoAbsen">0</span></div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card p-3 bg-light">
-        <h6>Parguru</h6>
-        <div>Hadir: <span id="parguruHadir">0</span></div>
-        <div>Absen: <span id="parguruAbsen">0</span></div>
-      </div>
-    </div>
   </div>
 
   <!-- TABEL -->
@@ -72,7 +53,6 @@
           <th>Hari</th>
           <th>Tanggal</th>
           <th>Status</th>
-          <th>Aksi</th>
         </tr>
       </thead>
       <tbody id="dataAbsensi"></tbody>
@@ -88,9 +68,12 @@
 
 <script>
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyCwQGsFPBIs_gk0Xc1hscpG-7n6M16gqWc",
   authDomain: "rnhkbp-pelikan.firebaseapp.com",
-  projectId: "rnhkbp-pelikan"
+  projectId: "rnhkbp-pelikan",
+  storageBucket: "rnhkbp-pelikan.firebasestorage.app",
+  messagingSenderId: "202813062166",
+  appId: "1:202813062166:web:eb3d963d5965a5e6f48937"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -114,112 +97,75 @@ db.collection("anggota").onSnapshot(snapshot=>{
   document.getElementById("anggotaSelect").innerHTML = options;
 });
 
-// HARI OTOMATIS
+// ISI HARI OTOMATIS
 function isiHari(){
   const tanggal = document.getElementById("tanggal").value;
   if(!tanggal) return;
 
   const hariList = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
   const date = new Date(tanggal);
-  document.getElementById("hari").value = hariList[date.getDay()];
+  const hari = hariList[date.getDay()];
+
+  document.getElementById("hari").value = hari;
 }
 
-// SIMPAN / UPDATE
+// SIMPAN ABSENSI
 function simpanAbsensi(){
-  const editId = document.getElementById("editId").value;
   const kegiatan = document.getElementById("kegiatan").value;
   const anggotaData = document.getElementById("anggotaSelect").value.split("|");
 
-  const data = {
+  const anggotaId = anggotaData[0];
+  const nama = anggotaData[1];
+  const kategori = anggotaData[2];
+
+  const tanggal = document.getElementById("tanggal").value;
+  const hari = document.getElementById("hari").value;
+  const status = document.getElementById("status").value;
+
+  if(!tanggal){
+    alert("Pilih tanggal dulu!");
+    return;
+  }
+
+  db.collection("absensi").add({
     kegiatan,
-    anggotaId: anggotaData[0],
-    nama: anggotaData[1],
-    kategori: anggotaData[2],
-    tanggal: document.getElementById("tanggal").value,
-    hari: document.getElementById("hari").value,
-    status: document.getElementById("status").value,
+    anggotaId,
+    nama,
+    kategori,
+    tanggal,
+    hari,
+    status,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  };
-
-  if(editId){
-    db.collection("absensi").doc(editId).update(data).then(()=>{
-      alert("Data berhasil diupdate");
-      document.getElementById("editId").value="";
-    });
-  } else {
-    db.collection("absensi").add(data).then(()=>{
-      alert("Data berhasil disimpan");
-    });
-  }
-
-  document.getElementById("tanggal").value="";
-  document.getElementById("hari").value="";
+  }).then(()=>{
+    alert("Absensi berhasil disimpan");
+    document.getElementById("tanggal").value="";
+    document.getElementById("hari").value="";
+  }).catch(e=>{
+    alert("Error: " + e.message);
+  });
 }
 
-// EDIT
-function editData(id, kegiatan, nama, kategori, tanggal, status){
-  document.getElementById("editId").value = id;
-  document.getElementById("kegiatan").value = kegiatan;
-  document.getElementById("tanggal").value = tanggal;
-  document.getElementById("status").value = status;
-  isiHari();
-}
-
-// HAPUS
-function hapusData(id){
-  if(confirm("Yakin mau hapus?")){
-    db.collection("absensi").doc(id).delete();
-  }
-}
-
-// TAMPILKAN DATA + HITUNG TOTAL
-db.collection("absensi").orderBy("createdAt","desc")
+// TAMPILKAN DATA REALTIME
+db.collection("absensi")
+.orderBy("createdAt","desc")
 .onSnapshot(snapshot=>{
   let html="";
-  let naposoH=0, naposoA=0, parguruH=0, parguruA=0;
-
   snapshot.forEach(doc=>{
-    const d = doc.data();
-
-    if(d.kategori === "Naposo"){
-      if(d.status === "Hadir") naposoH++;
-      else naposoA++;
-    }
-
-    if(d.kategori === "Parguru"){
-      if(d.status === "Hadir") parguruH++;
-      else parguruA++;
-    }
-
+    const data = doc.data();
     html += `
       <tr>
-        <td>${d.kegiatan}</td>
-        <td>${d.nama}</td>
-        <td>${d.kategori}</td>
-        <td>${d.hari}</td>
-        <td>${d.tanggal}</td>
-        <td>${d.status}</td>
-        <td>
-          <button class="btn btn-warning btn-sm"
-            onclick="editData('${doc.id}','${d.kegiatan}','${d.nama}','${d.kategori}','${d.tanggal}','${d.status}')">
-            Edit
-          </button>
-          <button class="btn btn-danger btn-sm"
-            onclick="hapusData('${doc.id}')">
-            Hapus
-          </button>
-        </td>
+        <td>${data.kegiatan}</td>
+        <td>${data.nama}</td>
+        <td>${data.kategori}</td>
+        <td>${data.hari}</td>
+        <td>${data.tanggal}</td>
+        <td>${data.status}</td>
       </tr>
     `;
   });
-
   document.getElementById("dataAbsensi").innerHTML = html;
-  document.getElementById("naposoHadir").innerText = naposoH;
-  document.getElementById("naposoAbsen").innerText = naposoA;
-  document.getElementById("parguruHadir").innerText = parguruH;
-  document.getElementById("parguruAbsen").innerText = parguruA;
 });
 </script>
 
 </body>
-</html>
+</html> 
