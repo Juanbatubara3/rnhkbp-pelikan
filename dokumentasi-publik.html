@@ -1,50 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Dokumentasi Kegiatan RNHKBP</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi Kegiatan - RNHKBP Pelikan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
-    /* Animasi loading */
-    .skeleton {
-      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-      background-size: 200% 100%;
-      animation: loading 1.5s infinite;
-      border-radius: 10px;
-    }
-    
-    @keyframes loading {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+    .hero-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 60px 0;
+      margin-bottom: 40px;
     }
     
     .article-card {
-      transition: transform 0.3s, box-shadow 0.3s;
-      height: 100%;
       border: none;
       border-radius: 15px;
       overflow: hidden;
       box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-      background: white;
-      opacity: 0;
-      animation: fadeIn 0.5s ease-in forwards;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      transition: all 0.3s;
+      height: 100%;
     }
     
     .article-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-10px);
       box-shadow: 0 15px 30px rgba(0,0,0,0.15);
     }
     
     .article-image {
-      height: 200px;
+      height: 220px;
       object-fit: cover;
       transition: transform 0.5s;
-      background-color: #f8f9fa;
     }
     
     .article-card:hover .article-image {
@@ -62,7 +49,6 @@
       font-size: 12px;
       font-weight: 500;
       z-index: 1;
-      backdrop-filter: blur(5px);
     }
     
     .date-badge {
@@ -76,22 +62,13 @@
       font-size: 12px;
       font-weight: 500;
       z-index: 1;
-      backdrop-filter: blur(5px);
-    }
-    
-    .hero-section {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 60px 0 80px;
-      margin-bottom: -40px;
-      clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
     }
     
     .search-box {
       border-radius: 30px;
       padding: 15px 25px;
       border: none;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
     .filter-select {
@@ -100,70 +77,35 @@
       border: none;
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       cursor: pointer;
-      background: white;
     }
     
-    /* Lazy load image */
-    .lazy-image {
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    
-    .lazy-image.loaded {
-      opacity: 1;
-    }
-    
-    /* Infinite scroll */
-    .load-more-btn {
+    .pagination-btn {
       border-radius: 30px;
-      padding: 12px 40px;
-      font-weight: 500;
+      padding: 10px 25px;
       transition: all 0.3s;
     }
     
-    .load-more-btn:hover {
+    .pagination-btn:hover {
       transform: scale(1.05);
     }
     
-    /* Skeleton loading */
-    .skeleton-card {
-      background: white;
-      border-radius: 15px;
-      padding: 0;
-      overflow: hidden;
+    .footer {
+      background: #212529;
+      color: white;
+      padding: 50px 0 20px;
+      margin-top: 60px;
     }
     
-    .skeleton-image {
-      width: 100%;
-      height: 200px;
-      background: #f0f0f0;
-    }
-    
-    .skeleton-line {
-      height: 20px;
-      background: #f0f0f0;
-      margin: 15px;
+    .skeleton {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
       border-radius: 10px;
     }
     
-    .skeleton-line.short {
-      width: 60%;
-    }
-    
-    .skeleton-line.medium {
-      width: 80%;
-    }
-    
-    /* No results animation */
-    .no-results {
-      animation: bounceIn 0.5s ease;
-    }
-    
-    @keyframes bounceIn {
-      0% { transform: scale(0.3); opacity: 0; }
-      50% { transform: scale(1.05); }
-      70% { transform: scale(0.9); }
-      100% { transform: scale(1); opacity: 1; }
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
   </style>
 </head>
@@ -172,49 +114,54 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
   <div class="container">
-    <a class="navbar-brand" href="dokumentasi-publik.html">
-      <i class="fas fa-camera-retro me-2"></i>Dokumentasi RNHKBP
+    <a class="navbar-brand" href="index.html">
+      <i class="fas fa-church me-2"></i>RNHKBP Pelikan
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav mx-auto">
         <li class="nav-item">
-          <a class="nav-link active" href="dokumentasi-publik.html">Beranda</a>
+          <a class="nav-link" href="index.html">Beranda</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#tentang" data-bs-toggle="modal" data-bs-target="#tentangModal">Tentang</a>
+          <a class="nav-link active" href="dokumentasi-publik.html">Dokumentasi</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="index.html">
-            <i class="fas fa-lock me-1"></i>Admin
-          </a>
+          <a class="nav-link" href="index.html#tentang">Tentang</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="index.html#kontak">Kontak</a>
         </li>
       </ul>
+      <a href="login.html" class="btn btn-outline-light">
+        <i class="fas fa-lock me-2"></i>Admin
+      </a>
     </div>
   </div>
 </nav>
 
-<!-- Hero Section dengan Search -->
-<div class="hero-section">
+<!-- Hero Section -->
+<section class="hero-section">
   <div class="container text-center">
-    <h1 class="display-4 mb-3 animate__animated animate__fadeInDown">
+    <h1 class="display-4 mb-3">
       <i class="fas fa-images me-3"></i>Dokumentasi Kegiatan
     </h1>
-    <p class="lead mb-4 animate__animated animate__fadeInUp">
-      Partangiangan, Latihan Koor, dan berbagai kegiatan RNHKBP
+    <p class="lead mb-4">
+      Dokumentasi Partangiangan, Latihan Koor, dan berbagai kegiatan RNHKBP Pelikan
     </p>
-    <div class="row justify-content-center animate__animated animate__fadeInUp animate__delay-1s">
+    
+    <!-- Search Box -->
+    <div class="row justify-content-center">
       <div class="col-md-8">
         <div class="input-group">
           <input 
             type="text" 
             id="searchInput" 
             class="form-control search-box" 
-            placeholder="Cari judul atau isi artikel..." 
-            onkeyup="debounce(filterArtikel, 500)()"
-            autocomplete="off"
+            placeholder="Cari judul atau isi artikel..."
+            onkeyup="filterArtikel()"
           >
           <span class="input-group-text search-box" style="border-left: none; background: white;">
             <i class="fas fa-search text-primary"></i>
@@ -223,10 +170,10 @@
       </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- Filter Section -->
-<div class="container mb-5" style="margin-top: -30px;">
+<div class="container mb-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
       <select id="kategoriFilter" class="form-select filter-select" onchange="filterArtikel()">
@@ -244,87 +191,96 @@
 <!-- Artikel Grid -->
 <div class="container mb-5">
   <!-- Skeleton Loading -->
-  <div id="skeletonContainer" class="row g-4">
-    <!-- Akan diisi dengan JavaScript -->
+  <div id="skeletonContainer" class="row g-4" style="display: none;">
+    <div class="col-lg-4 col-md-6">
+      <div class="card article-card">
+        <div class="skeleton" style="height: 220px;"></div>
+        <div class="card-body">
+          <div class="skeleton" style="height: 24px; width: 80%; margin-bottom: 10px;"></div>
+          <div class="skeleton" style="height: 16px; margin-bottom: 5px;"></div>
+          <div class="skeleton" style="height: 16px; width: 60%;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+      <div class="card article-card">
+        <div class="skeleton" style="height: 220px;"></div>
+        <div class="card-body">
+          <div class="skeleton" style="height: 24px; width: 80%; margin-bottom: 10px;"></div>
+          <div class="skeleton" style="height: 16px; margin-bottom: 5px;"></div>
+          <div class="skeleton" style="height: 16px; width: 60%;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+      <div class="card article-card">
+        <div class="skeleton" style="height: 220px;"></div>
+        <div class="card-body">
+          <div class="skeleton" style="height: 24px; width: 80%; margin-bottom: 10px;"></div>
+          <div class="skeleton" style="height: 16px; margin-bottom: 5px;"></div>
+          <div class="skeleton" style="height: 16px; width: 60%;"></div>
+        </div>
+      </div>
+    </div>
   </div>
   
   <!-- Artikel Container -->
   <div id="artikelContainer" class="row g-4"></div>
   
   <!-- Load More Button -->
-  <div class="text-center mt-5" id="loadMoreContainer">
-    <button class="btn btn-outline-primary load-more-btn" onclick="loadMore()" id="loadMoreBtn" style="display: none;">
+  <div class="text-center mt-5">
+    <button class="btn btn-outline-primary pagination-btn" onclick="loadMore()" id="loadMoreBtn" style="display: none;">
       <i class="fas fa-sync-alt me-2"></i>Muat Lebih Banyak
     </button>
   </div>
   
-  <!-- Infinite Scroll Spinner -->
-  <div id="infiniteScrollSpinner" class="text-center py-4" style="display: none;">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-    <p class="text-muted mt-2">Memuat artikel lainnya...</p>
+  <!-- No Data Message -->
+  <div id="noDataMessage" class="text-center py-5" style="display: none;">
+    <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+    <h4 class="text-muted">Belum Ada Artikel</h4>
+    <p class="text-muted">Belum ada dokumentasi yang tersedia saat ini.</p>
   </div>
   
   <!-- No Results Message -->
   <div id="noResultsMessage" class="text-center py-5" style="display: none;">
-    <div class="no-results">
-      <i class="fas fa-search fa-4x text-muted mb-3"></i>
-      <h4 class="text-muted">Tidak Ditemukan</h4>
-      <p class="text-muted mb-4">Maaf, tidak ada artikel yang sesuai dengan pencarian Anda.</p>
-      <button class="btn btn-primary" onclick="resetFilter()">
-        <i class="fas fa-redo-alt me-2"></i>Reset Filter
-      </button>
-    </div>
-  </div>
-  
-  <!-- No Data Message -->
-  <div id="noDataMessage" class="text-center py-5" style="display: none;">
-    <div class="no-results">
-      <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
-      <h4 class="text-muted">Belum Ada Artikel</h4>
-      <p class="text-muted">Belum ada dokumentasi yang tersedia saat ini.</p>
-    </div>
-  </div>
-</div>
-
-<!-- Tentang Modal -->
-<div class="modal fade" id="tentangModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">
-          <i class="fas fa-info-circle me-2 text-primary"></i>Tentang Dokumentasi
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p>Selamat datang di halaman dokumentasi kegiatan RNHKBP Pelikan.</p>
-        <p>Di sini Anda dapat melihat:</p>
-        <ul>
-          <li>📸 Dokumentasi Partangiangan</li>
-          <li>🎵 Dokumentasi Latihan Koor</li>
-          <li>⛪ Dokumentasi Kebaktian</li>
-          <li>🎉 Dokumentasi Acara Khusus</li>
-        </ul>
-        <p class="mb-0">Setiap artikel dilengkapi dengan fitur like dan komentar untuk interaksi.</p>
-      </div>
-    </div>
+    <i class="fas fa-search fa-4x text-muted mb-3"></i>
+    <h4 class="text-muted">Tidak Ditemukan</h4>
+    <p class="text-muted">Tidak ada artikel yang sesuai dengan pencarian Anda.</p>
+    <button class="btn btn-primary mt-3" onclick="resetFilter()">
+      <i class="fas fa-redo-alt me-2"></i>Reset Filter
+    </button>
   </div>
 </div>
 
 <!-- Footer -->
-<footer class="bg-dark text-white py-4 mt-5">
-  <div class="container text-center">
-    <p class="mb-0">
-      <i class="fas fa-church me-2"></i>RNHKBP - Pelikan 
-      <span class="mx-2">|</span> 
-      <i class="far fa-copyright me-1"></i>2024 
-      <span class="mx-2">|</span>
-      <a href="#" class="text-white text-decoration-none" data-bs-toggle="modal" data-bs-target="#tentangModal">
-        <i class="fas fa-info-circle me-1"></i>Tentang
-      </a>
-    </p>
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <h5><i class="fas fa-church me-2"></i>RNHKBP Pelikan</h5>
+        <p class="text-white-50">Melayani dengan Kasih, Bertumbuh dalam Iman</p>
+      </div>
+      <div class="col-md-4 mb-4">
+        <h5>Link Cepat</h5>
+        <ul class="list-unstyled">
+          <li><a href="index.html" class="text-white-50 text-decoration-none">Beranda</a></li>
+          <li><a href="dokumentasi-publik.html" class="text-white-50 text-decoration-none">Dokumentasi</a></li>
+          <li><a href="index.html#tentang" class="text-white-50 text-decoration-none">Tentang</a></li>
+          <li><a href="index.html#kontak" class="text-white-50 text-decoration-none">Kontak</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4 mb-4">
+        <h5>Admin</h5>
+        <p class="text-white-50">Fitur admin hanya untuk pengelola</p>
+        <a href="login.html" class="btn btn-outline-light btn-sm">
+          <i class="fas fa-lock me-2"></i>Login Admin
+        </a>
+      </div>
+    </div>
+    <hr class="bg-light">
+    <div class="text-center">
+      <p class="mb-0">&copy; 2024 RNHKBP Pelikan. All rights reserved.</p>
+    </div>
   </div>
 </footer>
 
@@ -334,7 +290,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-// ================= KONFIGURASI =================
+// ================= KONFIGURASI FIREBASE =================
 const firebaseConfig = {
   apiKey: "AIzaSyCwQGsFPBIs_gk0Xc1hscpG-7n6M16gqWc",
   authDomain: "rnhkbp-pelikan.firebaseapp.com",
@@ -351,44 +307,10 @@ const db = firebase.firestore();
 // ================= VARIABEL GLOBAL =================
 let allArticles = [];
 let displayedArticles = [];
-let currentPage = 0;
-const ARTICLES_PER_PAGE = 6;
-let searchTimeout;
 let lastVisible = null;
 let loading = false;
 let hasMore = true;
-
-// ================= SKELETON LOADING =================
-function showSkeleton() {
-  const skeletonContainer = document.getElementById('skeletonContainer');
-  let skeletonHTML = '';
-  
-  for (let i = 0; i < 6; i++) {
-    skeletonHTML += `
-      <div class="col-lg-4 col-md-6">
-        <div class="skeleton-card">
-          <div class="skeleton-image skeleton"></div>
-          <div class="skeleton-line skeleton mt-3"></div>
-          <div class="skeleton-line skeleton short"></div>
-          <div class="skeleton-line skeleton medium"></div>
-          <div class="d-flex justify-content-between p-3">
-            <div class="skeleton-line skeleton" style="width: 100px;"></div>
-            <div class="skeleton-line skeleton" style="width: 50px;"></div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-  
-  skeletonContainer.innerHTML = skeletonHTML;
-  skeletonContainer.style.display = 'flex';
-  document.getElementById('artikelContainer').style.display = 'none';
-}
-
-function hideSkeleton() {
-  document.getElementById('skeletonContainer').style.display = 'none';
-  document.getElementById('artikelContainer').style.display = 'flex';
-}
+const ARTICLES_PER_PAGE = 6;
 
 // ================= LOAD ARTICLES =================
 async function loadArticles(isInitial = true) {
@@ -396,12 +318,10 @@ async function loadArticles(isInitial = true) {
   loading = true;
   
   if (isInitial) {
-    showSkeleton();
-    currentPage = 0;
+    document.getElementById('skeletonContainer').style.display = 'flex';
+    document.getElementById('artikelContainer').innerHTML = '';
     lastVisible = null;
     allArticles = [];
-  } else {
-    document.getElementById('infiniteScrollSpinner').style.display = 'block';
   }
   
   try {
@@ -409,7 +329,6 @@ async function loadArticles(isInitial = true) {
       .orderBy("tanggal", "desc")
       .limit(ARTICLES_PER_PAGE);
     
-    // Add startAfter for pagination
     if (lastVisible) {
       query = query.startAfter(lastVisible);
     }
@@ -417,39 +336,34 @@ async function loadArticles(isInitial = true) {
     const snapshot = await query.get();
     
     if (isInitial) {
-      hideSkeleton();
+      document.getElementById('skeletonContainer').style.display = 'none';
     }
     
     if (snapshot.empty) {
       hasMore = false;
       document.getElementById('loadMoreBtn').style.display = 'none';
-      document.getElementById('infiniteScrollSpinner').style.display = 'none';
       
       if (isInitial && allArticles.length === 0) {
         document.getElementById('noDataMessage').style.display = 'block';
-        document.getElementById('artikelContainer').innerHTML = '';
       }
       loading = false;
       return;
     }
     
-    // Set last visible for next page
+    document.getElementById('noDataMessage').style.display = 'none';
+    
     lastVisible = snapshot.docs[snapshot.docs.length - 1];
     
-    // Process each document
     const newArticles = [];
     snapshot.forEach(doc => {
-      const data = doc.data();
       newArticles.push({
         id: doc.id,
-        ...data
+        ...doc.data()
       });
     });
     
-    // Add to all articles
     allArticles = [...allArticles, ...newArticles];
     
-    // Update UI
     if (isInitial) {
       displayedArticles = allArticles;
       renderArticles(displayedArticles);
@@ -458,37 +372,24 @@ async function loadArticles(isInitial = true) {
       appendArticles(newArticles);
     }
     
-    // Check if there are more articles
-    if (snapshot.size < ARTICLES_PER_PAGE) {
-      hasMore = false;
-      document.getElementById('loadMoreBtn').style.display = 'none';
-    } else {
-      hasMore = true;
-      document.getElementById('loadMoreBtn').style.display = 'inline-block';
-    }
-    
-    document.getElementById('noDataMessage').style.display = 'none';
-    document.getElementById('noResultsMessage').style.display = 'none';
+    hasMore = snapshot.size === ARTICLES_PER_PAGE;
+    document.getElementById('loadMoreBtn').style.display = hasMore ? 'inline-block' : 'none';
     
   } catch (error) {
     console.error("Error loading articles:", error);
     if (isInitial) {
-      hideSkeleton();
+      document.getElementById('skeletonContainer').style.display = 'none';
       document.getElementById('artikelContainer').innerHTML = `
         <div class="col-12 text-center py-5">
           <i class="fas fa-exclamation-triangle fa-4x text-danger mb-3"></i>
           <h5 class="text-danger">Gagal Memuat Data</h5>
           <p class="text-muted">${error.message}</p>
-          <button class="btn btn-primary mt-3" onclick="location.reload()">
-            <i class="fas fa-sync-alt me-2"></i>Muat Ulang
-          </button>
         </div>
       `;
     }
   }
   
   loading = false;
-  document.getElementById('infiniteScrollSpinner').style.display = 'none';
 }
 
 // ================= RENDER ARTICLES =================
@@ -505,52 +406,37 @@ function renderArticles(articles) {
   document.getElementById('noResultsMessage').style.display = 'none';
   
   let html = '';
-  articles.forEach((artikel, index) => {
-    // Format tanggal dengan aman
-    let tanggal = 'Tanggal tidak tersedia';
+  articles.forEach(artikel => {
+    // Format tanggal
+    let tanggal = '';
     if (artikel.tanggal) {
       try {
         if (artikel.tanggal.toDate) {
-          tanggal = new Date(artikel.tanggal.toDate()).toLocaleDateString('id-ID', {
+          tanggal = artikel.tanggal.toDate().toLocaleDateString('id-ID', {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
           });
-        } else if (artikel.tanggal instanceof Date) {
-          tanggal = artikel.tanggal.toLocaleDateString('id-ID');
-        } else if (artikel.tanggal.seconds) {
-          tanggal = new Date(artikel.tanggal.seconds * 1000).toLocaleDateString('id-ID');
         }
-      } catch (e) {
-        console.log("Error formatting date:", e);
-      }
+      } catch (e) {}
     }
     
-    // Buat excerpt dari isi artikel
+    // Buat excerpt
     let excerpt = '';
-    try {
+    if (artikel.isi) {
       const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = artikel.isi || '';
-      const textContent = tempDiv.textContent || tempDiv.innerText || '';
-      excerpt = textContent.substring(0, 120) + (textContent.length > 120 ? '...' : '');
-    } catch (e) {
-      excerpt = 'Klik untuk membaca selengkapnya...';
+      tempDiv.innerHTML = artikel.isi;
+      excerpt = tempDiv.textContent.substring(0, 120) + (tempDiv.textContent.length > 120 ? '...' : '');
     }
-    
-    // Gambar default jika tidak ada
-    const imageUrl = artikel.foto || 'https://via.placeholder.com/400x200?text=RNHKBP+Pelikan';
     
     html += `
-      <div class="col-lg-4 col-md-6" style="animation-delay: ${index * 0.1}s">
-        <div class="article-card">
+      <div class="col-lg-4 col-md-6">
+        <div class="card article-card">
           <div class="position-relative overflow-hidden">
-            <img 
-              src="${imageUrl}" 
-              class="article-image w-100" 
-              alt="${artikel.judul || 'Artikel'}"
-              loading="lazy"
-              onerror="this.src='https://via.placeholder.com/400x200?text=Gambar+Tidak+Tersedia'"
-            >
+            <img src="${artikel.foto || 'https://via.placeholder.com/400x220?text=RNHKBP'}" 
+                 class="article-image w-100" 
+                 alt="${artikel.judul}"
+                 onerror="this.src='https://via.placeholder.com/400x220?text=RNHKBP'">
             <span class="category-badge">
               <i class="fas fa-tag me-1"></i>${artikel.kategori || 'Umum'}
             </span>
@@ -558,13 +444,11 @@ function renderArticles(articles) {
               <i class="far fa-calendar-alt me-1"></i>${tanggal}
             </span>
           </div>
-          <div class="p-3">
-            <h5 class="fw-bold mb-2" style="font-size: 1.1rem;">
-              ${artikel.judul || 'Judul Tidak Tersedia'}
-            </h5>
-            <p class="text-muted small mb-3">${excerpt}</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <a href="detail-artikel.html?id=${artikel.id}" class="btn btn-sm btn-primary rounded-pill px-3">
+          <div class="card-body">
+            <h5 class="card-title fw-bold mb-2">${artikel.judul || 'Judul Artikel'}</h5>
+            <p class="card-text text-muted small">${excerpt}</p>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <a href="detail-artikel-publik.html?id=${artikel.id}" class="btn btn-primary btn-sm">
                 <i class="fas fa-book-open me-2"></i>Baca
               </a>
               <small class="text-muted">
@@ -580,18 +464,17 @@ function renderArticles(articles) {
   container.innerHTML = html;
 }
 
-// ================= APPEND MORE ARTICLES =================
+// ================= APPEND ARTICLES =================
 function appendArticles(newArticles) {
   const container = document.getElementById('artikelContainer');
   
   let html = '';
-  newArticles.forEach((artikel, index) => {
-    // Format tanggal dengan aman
-    let tanggal = 'Tanggal tidak tersedia';
+  newArticles.forEach(artikel => {
+    let tanggal = '';
     if (artikel.tanggal) {
       try {
         if (artikel.tanggal.toDate) {
-          tanggal = new Date(artikel.tanggal.toDate()).toLocaleDateString('id-ID', {
+          tanggal = artikel.tanggal.toDate().toLocaleDateString('id-ID', {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
@@ -600,38 +483,29 @@ function appendArticles(newArticles) {
       } catch (e) {}
     }
     
-    // Buat excerpt
     let excerpt = '';
-    try {
+    if (artikel.isi) {
       const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = artikel.isi || '';
-      const textContent = tempDiv.textContent || tempDiv.innerText || '';
-      excerpt = textContent.substring(0, 120) + (textContent.length > 120 ? '...' : '');
-    } catch (e) {
-      excerpt = 'Klik untuk membaca selengkapnya...';
+      tempDiv.innerHTML = artikel.isi;
+      excerpt = tempDiv.textContent.substring(0, 120) + (tempDiv.textContent.length > 120 ? '...' : '');
     }
-    
-    const imageUrl = artikel.foto || 'https://via.placeholder.com/400x200?text=RNHKBP+Pelikan';
     
     html += `
       <div class="col-lg-4 col-md-6">
-        <div class="article-card">
+        <div class="card article-card">
           <div class="position-relative overflow-hidden">
-            <img 
-              src="${imageUrl}" 
-              class="article-image w-100" 
-              alt="${artikel.judul || 'Artikel'}"
-              loading="lazy"
-              onerror="this.src='https://via.placeholder.com/400x200?text=Gambar+Tidak+Tersedia'"
-            >
+            <img src="${artikel.foto || 'https://via.placeholder.com/400x220?text=RNHKBP'}" 
+                 class="article-image w-100" 
+                 alt="${artikel.judul}"
+                 onerror="this.src='https://via.placeholder.com/400x220?text=RNHKBP'">
             <span class="category-badge">${artikel.kategori || 'Umum'}</span>
             <span class="date-badge">${tanggal}</span>
           </div>
-          <div class="p-3">
-            <h5 class="fw-bold mb-2">${artikel.judul || 'Judul Tidak Tersedia'}</h5>
-            <p class="text-muted small mb-3">${excerpt}</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <a href="detail-artikel.html?id=${artikel.id}" class="btn btn-sm btn-primary rounded-pill px-3">
+          <div class="card-body">
+            <h5 class="card-title fw-bold mb-2">${artikel.judul || 'Judul Artikel'}</h5>
+            <p class="card-text text-muted small">${excerpt}</p>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <a href="detail-artikel-publik.html?id=${artikel.id}" class="btn btn-primary btn-sm">
                 <i class="fas fa-book-open me-2"></i>Baca
               </a>
               <small class="text-muted">
@@ -647,12 +521,11 @@ function appendArticles(newArticles) {
   container.innerHTML += html;
 }
 
-// ================= FILTER ARTICLES =================
+// ================= FILTER ARTIKEL =================
 function filterArtikel() {
   const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
   const kategori = document.getElementById('kategoriFilter').value;
   
-  // Filter dari semua artikel yang sudah di-load
   const filtered = allArticles.filter(artikel => {
     const judul = (artikel.judul || '').toLowerCase();
     const isi = (artikel.isi || '').toLowerCase();
@@ -668,7 +541,6 @@ function filterArtikel() {
   
   renderArticles(filtered);
   
-  // Sembunyikan load more saat filter aktif
   if (searchTerm || kategori) {
     document.getElementById('loadMoreBtn').style.display = 'none';
   } else {
@@ -690,19 +562,15 @@ function resetFilter() {
   document.getElementById('loadMoreBtn').style.display = hasMore ? 'inline-block' : 'none';
 }
 
-// ================= DEBOUNCE =================
-function debounce(func, wait) {
-  return function() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => func.apply(this, arguments), wait);
-  };
-}
+// ================= INITIAL LOAD =================
+document.addEventListener('DOMContentLoaded', () => {
+  loadArticles(true);
+});
 
 // ================= INFINITE SCROLL =================
 window.addEventListener('scroll', () => {
   if (loading || !hasMore) return;
   
-  // Cek filter aktif
   const searchTerm = document.getElementById('searchInput').value;
   const kategori = document.getElementById('kategoriFilter').value;
   if (searchTerm || kategori) return;
@@ -710,36 +578,10 @@ window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
   const height = document.documentElement.scrollHeight - window.innerHeight;
   
-  // Load more ketika scroll 80% ke bawah
   if (height > 0 && (scrollY / height) > 0.8) {
     loadMore();
   }
 });
-
-// ================= INITIAL LOAD =================
-document.addEventListener('DOMContentLoaded', () => {
-  loadArticles(true);
-});
-
-// ================= OPTIMASI GAMBAR =================
-// Intersection Observer untuk lazy loading
-if ('IntersectionObserver' in window) {
-  const imageObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const img = entry.target;
-        img.src = img.dataset.src;
-        img.classList.add('loaded');
-        observer.unobserve(img);
-      }
-    });
-  });
-  
-  // Apply ke semua gambar
-  document.querySelectorAll('img.lazy-image').forEach(img => {
-    imageObserver.observe(img);
-  });
-}
 </script>
 
 </body>
