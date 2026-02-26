@@ -3,15 +3,52 @@
 <head>
   <title>Absensi Kegiatan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Tambahkan Font Awesome untuk icon -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .filter-section {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .stats-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .stats-card:last-child {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    .badge-naposobulung {
+      background-color: #0d6efd;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+    .badge-parguru {
+      background-color: #198754;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+  </style>
 </head>
 <body>
 
 <nav class="navbar navbar-dark bg-dark">
   <div class="container-fluid">
-    <span class="navbar-brand">Absensi Partangiangan & Latihan Koor</span>
-    <a href="dashboard.html" class="btn btn-light">Kembali</a>
+    <span class="navbar-brand">
+      <i class="fas fa-church me-2"></i>Absensi Partangiangan & Latihan Koor
+    </span>
+    <a href="dashboard.html" class="btn btn-light">
+      <i class="fas fa-arrow-left me-2"></i>Kembali
+    </a>
   </div>
 </nav>
 
@@ -19,87 +56,176 @@
 
   <!-- FORM INPUT -->
   <div class="card p-3 mb-4 shadow">
-    <h5>Input Absensi Kegiatan</h5>
+    <h5 class="mb-3">
+      <i class="fas fa-edit me-2 text-primary"></i>Input Absensi Kegiatan
+    </h5>
 
-    <select id="kegiatan" class="form-control mb-2">
-      <option value="Partangiangan">Partangiangan</option>
-      <option value="Latihan Koor">Latihan Koor</option>
-      <option value="Lainnya">Lainnya</option>
-    </select>
+    <div class="row">
+      <div class="col-md-4">
+        <label class="form-label fw-bold">Kegiatan</label>
+        <select id="kegiatan" class="form-control mb-2">
+          <option value="Partangiangan">🙏 Partangiangan</option>
+          <option value="Latihan Koor">🎵 Latihan Koor</option>
+          <option value="Lainnya">📌 Lainnya</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-bold">Nama Anggota</label>
+        <select id="anggotaSelect" class="form-control mb-2">
+          <option value="">-- Pilih Anggota --</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-bold">Status</label>
+        <select id="status" class="form-control mb-2">
+          <option value="Hadir">✅ Hadir</option>
+          <option value="Izin">📝 Izin</option>
+          <option value="Sakit">🤒 Sakit</option>
+          <option value="Alpha">❌ Alpha</option>
+        </select>
+      </div>
+    </div>
 
-    <select id="anggotaSelect" class="form-control mb-2"></select>
+    <div class="row">
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Tanggal</label>
+        <input type="date" id="tanggal" class="form-control mb-2" onchange="isiHari()">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Hari</label>
+        <input type="text" id="hari" class="form-control mb-2" placeholder="Hari" readonly>
+      </div>
+    </div>
 
-    <input type="date" id="tanggal" class="form-control mb-2" onchange="isiHari()">
-    <input type="text" id="hari" class="form-control mb-2" placeholder="Hari" readonly>
-
-    <select id="status" class="form-control mb-2">
-      <option value="Hadir">Hadir</option>
-      <option value="Izin">Izin</option>
-      <option value="Sakit">Sakit</option>
-      <option value="Alpha">Alpha</option>
-    </select>
-
-    <button onclick="simpanAbsensi()" class="btn btn-primary">Simpan</button>
+    <button onclick="simpanAbsensi()" class="btn btn-primary" id="btnSimpan">
+      <i class="fas fa-save me-2"></i>Simpan Absensi
+    </button>
   </div>
 
-  <!-- TABEL -->
+  <!-- FILTER DAN DOWNLOAD SECTION -->
+  <div class="card p-3 mb-4 shadow filter-section">
+    <h5 class="mb-3">
+      <i class="fas fa-download me-2 text-success"></i>Download Laporan Absensi (TXT)
+    </h5>
+    
+    <div class="row">
+      <div class="col-md-4">
+        <label class="form-label fw-bold">Filter Tanggal</label>
+        <input type="date" id="filterTanggal" class="form-control mb-2">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-bold">Filter Kegiatan</label>
+        <select id="filterKegiatan" class="form-control mb-2">
+          <option value="">📋 Semua Kegiatan</option>
+          <option value="Partangiangan">🙏 Partangiangan</option>
+          <option value="Latihan Koor">🎵 Latihan Koor</option>
+          <option value="Lainnya">📌 Lainnya</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label fw-bold">&nbsp;</label>
+        <button onclick="downloadTXT()" class="btn btn-success w-100" id="btnDownload">
+          <i class="fas fa-file-alt me-2"></i>Download Laporan (TXT)
+        </button>
+      </div>
+    </div>
+    
+    <div class="row mt-2">
+      <div class="col-md-12">
+        <div class="alert alert-info mb-0">
+          <i class="fas fa-info-circle me-2"></i>
+          Laporan akan didownload dalam format TXT dengan tampilan rapi dan terstruktur.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABEL RIWAYAT -->
   <div class="card p-3 shadow">
-    <h5>Riwayat Absensi</h5>
-    <table class="table table-bordered">
-      <thead class="table-dark">
-        <tr>
-          <th>Kegiatan</th>
-          <th>Nama</th>
-          <th>Kategori</th>
-          <th>Hari</th>
-          <th>Tanggal</th>
-          <th>Status</th>
-          <th>Aksi</th> <!-- Kolom baru untuk aksi -->
-        </tr>
-      </thead>
-      <tbody id="dataAbsensi"></tbody>
-    </table>
+    <h5 class="mb-3">
+      <i class="fas fa-history me-2 text-info"></i>Riwayat Absensi
+    </h5>
+    
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Kegiatan</th>
+            <th>Nama</th>
+            <th>Kategori</th>
+            <th>Hari</th>
+            <th>Tanggal</th>
+            <th>Status</th>
+            <th style="width: 100px;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="dataAbsensi">
+          <tr>
+            <td colspan="7" class="text-center py-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p class="mt-2 text-muted">Memuat data absensi...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- REKAP TOTAL -->
   <div class="card p-3 mt-4 shadow">
-    <h5>Rekap Total Absensi</h5>
+    <h5 class="mb-3">
+      <i class="fas fa-chart-pie me-2 text-warning"></i>Rekap Total Absensi
+    </h5>
 
-    <h6 class="mt-3">Naposobulung</h6>
     <div class="row">
-      <div class="col-md-3">Hadir: <span id="naposoHadir">0</span></div>
-      <div class="col-md-3">Izin: <span id="naposoIzin">0</span></div>
-      <div class="col-md-3">Sakit: <span id="naposoSakit">0</span></div>
-      <div class="col-md-3">Alpha: <span id="naposoAlpha">0</span></div>
-    </div>
-
-    <h6 class="mt-3">Parguru Malua</h6>
-    <div class="row">
-      <div class="col-md-3">Hadir: <span id="parguruHadir">0</span></div>
-      <div class="col-md-3">Izin: <span id="parguruIzin">0</span></div>
-      <div class="col-md-3">Sakit: <span id="parguruSakit">0</span></div>
-      <div class="col-md-3">Alpha: <span id="parguruAlpha">0</span></div>
-    </div>
-
-    <hr>
-
-    <h6>Filter Download</h6>
-    <div class="row">
-      <div class="col-md-4">
-        <input type="date" id="filterTanggal" class="form-control mb-2" placeholder="Filter Tanggal">
+      <div class="col-md-6">
+        <div class="stats-card">
+          <h6 class="fw-bold"><i class="fas fa-user-graduate me-2"></i>Naposobulung</h6>
+          <div class="row text-center">
+            <div class="col-3">
+              <div class="small">Hadir</div>
+              <h4 class="mb-0" id="naposoHadir">0</h4>
+            </div>
+            <div class="col-3">
+              <div class="small">Izin</div>
+              <h4 class="mb-0" id="naposoIzin">0</h4>
+            </div>
+            <div class="col-3">
+              <div class="small">Sakit</div>
+              <h4 class="mb-0" id="naposoSakit">0</h4>
+            </div>
+            <div class="col-3">
+              <div class="small">Alpha</div>
+              <h4 class="mb-0" id="naposoAlpha">0</h4>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <select id="filterKegiatan" class="form-control mb-2">
-          <option value="">Semua Kegiatan</option>
-          <option value="Partangiangan">Partangiangan</option>
-          <option value="Latihan Koor">Latihan Koor</option>
-          <option value="Lainnya">Lainnya</option>
-        </select>
-      </div>
-      <div class="col-md-4">
-        <button onclick="downloadTXT()" class="btn btn-success w-100">
-          Download TXT
-        </button>
+      
+      <div class="col-md-6">
+        <div class="stats-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+          <h6 class="fw-bold"><i class="fas fa-chalkboard-teacher me-2"></i>Parguru Malua</h6>
+          <div class="row text-center">
+            <div class="col-3">
+              <div class="small">Hadir</div>
+              <h4 class="mb-0" id="parguruHadir">0</h4>
+            </div>
+            <div class="col-3">
+              <div class="small">Izin</div>
+              <h4 class="mb-0" id="parguruIzin">0</h4>
+            </div>
+            <div class="col-3">
+              <div class="small">Sakit</div>
+              <h4 class="mb-0" id="parguruSakit">0</h4>
+            </div>
+            <div class="col-3">
+              <div class="small">Alpha</div>
+              <h4 class="mb-0" id="parguruAlpha">0</h4>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -112,6 +238,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
+// ================= KONFIGURASI FIREBASE =================
 const firebaseConfig = {
   apiKey: "AIzaSyCwQGsFPBIs_gk0Xc1hscpG-7n6M16gqWc",
   authDomain: "rnhkbp-pelikan.firebaseapp.com",
@@ -121,219 +248,478 @@ const firebaseConfig = {
   appId: "1:202813062166:web:eb3d963d5965a5e6f48937"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-firebase.auth().onAuthStateChanged(user=>{
-  if(!user){
-    window.location.href="index.html";
+// ================= CEK LOGIN =================
+firebase.auth().onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "index.html";
   }
 });
 
-// LOAD ANGGOTA
-db.collection("anggota").onSnapshot(snapshot=>{
-  let options="";
-  snapshot.forEach(doc=>{
-    const data = doc.data();
-    options += `<option value="${doc.id}|${data.nama}|${data.kategori}">
-      ${data.nama} (${data.kategori})
-    </option>`;
-  });
+// ================= LOAD ANGGOTA =================
+db.collection("anggota").onSnapshot(snapshot => {
+  let options = '<option value="">-- Pilih Anggota --</option>';
+  
+  if (snapshot.empty) {
+    options = '<option value="">-- Belum ada anggota --</option>';
+  } else {
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data && data.nama && data.kategori) {
+        options += `<option value="${doc.id}|${data.nama}|${data.kategori}">
+          ${data.nama} (${data.kategori})
+        </option>`;
+      }
+    });
+  }
+  
   document.getElementById("anggotaSelect").innerHTML = options;
 });
 
-// ISI HARI
-function isiHari(){
+// ================= ISI HARI =================
+function isiHari() {
   const tanggal = document.getElementById("tanggal").value;
-  if(!tanggal) return;
+  if (!tanggal) return;
 
-  const hariList = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+  const hariList = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
   const date = new Date(tanggal + "T00:00:00");
   document.getElementById("hari").value = hariList[date.getDay()];
 }
 
-// SIMPAN
-function simpanAbsensi(){
+// ================= SIMPAN ABSENSI =================
+function simpanAbsensi() {
   const kegiatan = document.getElementById("kegiatan").value;
-  const anggotaData = document.getElementById("anggotaSelect").value.split("|");
+  const anggotaSelect = document.getElementById("anggotaSelect").value;
   const tanggal = document.getElementById("tanggal").value;
   const hari = document.getElementById("hari").value;
   const status = document.getElementById("status").value;
-
-  if(!tanggal){
-    alert("Pilih tanggal dulu!");
+  
+  if (!anggotaSelect || !tanggal) {
+    alert("Pilih anggota dan tanggal terlebih dahulu!");
     return;
   }
+  
+  const anggotaData = anggotaSelect.split("|");
+  if (anggotaData.length < 3) {
+    alert("Data anggota tidak valid!");
+    return;
+  }
+  
+  const anggotaId = anggotaData[0];
+  const nama = anggotaData[1];
+  const kategori = anggotaData[2];
+  
+  const btnSimpan = document.getElementById('btnSimpan');
+  btnSimpan.disabled = true;
+  btnSimpan.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
 
   db.collection("absensi").add({
-    kegiatan,
-    anggotaId: anggotaData[0],
-    nama: anggotaData[1],
-    kategori: anggotaData[2],
-    tanggal,
-    hari,
-    status,
+    kegiatan: kegiatan,
+    anggotaId: anggotaId,
+    nama: nama,
+    kategori: kategori,
+    tanggal: tanggal,
+    hari: hari,
+    status: status,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>{
-    alert("Absensi berhasil disimpan");
-    document.getElementById("tanggal").value="";
-    document.getElementById("hari").value="";
+  })
+  .then(() => {
+    alert("✅ Absensi berhasil disimpan!");
+    
+    document.getElementById("tanggal").value = "";
+    document.getElementById("hari").value = "";
+    document.getElementById("anggotaSelect").value = "";
+    
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById("tanggal").value = today;
+    isiHari();
+    
+    btnSimpan.disabled = false;
+    btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan Absensi';
+  })
+  .catch((error) => {
+    alert("❌ Gagal menyimpan: " + error.message);
+    btnSimpan.disabled = false;
+    btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan Absensi';
   });
 }
 
-// FUNGSI HAPUS ABSENSI
-function hapusAbsensi(id){
-  if(confirm("Apakah Anda yakin ingin menghapus data absensi ini?")){
+// ================= HAPUS ABSENSI =================
+function hapusAbsensi(id) {
+  if (confirm("Apakah Anda yakin ingin menghapus data absensi ini?")) {
     db.collection("absensi").doc(id).delete()
       .then(() => {
-        alert("Data absensi berhasil dihapus");
+        alert("✅ Data absensi berhasil dihapus!");
       })
       .catch((error) => {
-        alert("Gagal menghapus data: " + error.message);
+        alert("❌ Gagal menghapus: " + error.message);
       });
   }
 }
 
-// TAMPILKAN + HITUNG
-db.collection("absensi")
-.orderBy("createdAt","desc")
-.onSnapshot(snapshot=>{
-  let html="";
-  let naposoHadir=0, naposoIzin=0, naposoSakit=0, naposoAlpha=0;
-  let parguruHadir=0, parguruIzin=0, parguruSakit=0, parguruAlpha=0;
+// ================= GET STATUS BADGE =================
+function getStatusBadge(status) {
+  switch(status) {
+    case 'Hadir': return 'bg-success';
+    case 'Izin': return 'bg-warning text-dark';
+    case 'Sakit': return 'bg-info';
+    case 'Alpha': return 'bg-danger';
+    default: return 'bg-secondary';
+  }
+}
 
-  snapshot.forEach(doc=>{
-    const data = doc.data();
-    const docId = doc.id; // Ambil ID dokumen
-    
-    // Perbaiki pengecekan kategori sesuai dengan data di Firestore
-    const kategori = data.kategori || "";
-    
-    if(kategori === "Naposobulung"){
-      if(data.status==="Hadir") naposoHadir++;
-      if(data.status==="Izin") naposoIzin++;
-      if(data.status==="Sakit") naposoSakit++;
-      if(data.status==="Alpha") naposoAlpha++;
-    } else if(kategori === "Parguru Malua"){
-      if(data.status==="Hadir") parguruHadir++;
-      if(data.status==="Izin") parguruIzin++;
-      if(data.status==="Sakit") parguruSakit++;
-      if(data.status==="Alpha") parguruAlpha++;
+// ================= TAMPILKAN ABSENSI =================
+db.collection("absensi")
+  .orderBy("createdAt", "desc")
+  .onSnapshot(snapshot => {
+    let html = "";
+    let naposoHadir = 0, naposoIzin = 0, naposoSakit = 0, naposoAlpha = 0;
+    let parguruHadir = 0, parguruIzin = 0, parguruSakit = 0, parguruAlpha = 0;
+
+    if (snapshot.empty) {
+      html = `
+        <tr>
+          <td colspan="7" class="text-center py-4">
+            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+            <p class="text-muted">Belum ada data absensi</p>
+          </td>
+        </tr>
+      `;
+    } else {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const docId = doc.id;
+        const kategori = data.kategori || "";
+        
+        if (kategori === "Naposobulung") {
+          if (data.status === "Hadir") naposoHadir++;
+          else if (data.status === "Izin") naposoIzin++;
+          else if (data.status === "Sakit") naposoSakit++;
+          else if (data.status === "Alpha") naposoAlpha++;
+        } else if (kategori === "Parguru Malua") {
+          if (data.status === "Hadir") parguruHadir++;
+          else if (data.status === "Izin") parguruIzin++;
+          else if (data.status === "Sakit") parguruSakit++;
+          else if (data.status === "Alpha") parguruAlpha++;
+        }
+
+        const kategoriBadge = kategori === 'Naposobulung' ? 
+          '<span class="badge bg-primary">Naposobulung</span>' : 
+          '<span class="badge bg-success">Parguru Malua</span>';
+        
+        html += `
+          <tr>
+            <td>${data.kegiatan || '-'}</td>
+            <td>${data.nama || '-'}</td>
+            <td>${kategoriBadge}</td>
+            <td>${data.hari || '-'}</td>
+            <td>${data.tanggal || '-'}</td>
+            <td>
+              <span class="badge ${getStatusBadge(data.status)}">${data.status || '-'}</span>
+            </td>
+            <td>
+              <button onclick="hapusAbsensi('${docId}')" class="btn btn-danger btn-sm">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      });
     }
 
-    html += `
-      <tr>
-        <td>${data.kegiatan || ''}</td>
-        <td>${data.nama || ''}</td>
-        <td>${data.kategori || ''}</td>
-        <td>${data.hari || ''}</td>
-        <td>${data.tanggal || ''}</td>
-        <td>${data.status || ''}</td>
-        <td>
-          <button onclick="hapusAbsensi('${docId}')" class="btn btn-danger btn-sm">
-            <i class="fas fa-trash"></i> Hapus
-          </button>
-        </td>
-      </tr>
-    `;
+    document.getElementById("dataAbsensi").innerHTML = html;
+
+    document.getElementById("naposoHadir").innerText = naposoHadir;
+    document.getElementById("naposoIzin").innerText = naposoIzin;
+    document.getElementById("naposoSakit").innerText = naposoSakit;
+    document.getElementById("naposoAlpha").innerText = naposoAlpha;
+    document.getElementById("parguruHadir").innerText = parguruHadir;
+    document.getElementById("parguruIzin").innerText = parguruIzin;
+    document.getElementById("parguruSakit").innerText = parguruSakit;
+    document.getElementById("parguruAlpha").innerText = parguruAlpha;
   });
 
-  document.getElementById("dataAbsensi").innerHTML = html;
-
-  document.getElementById("naposoHadir").innerText = naposoHadir;
-  document.getElementById("naposoIzin").innerText = naposoIzin;
-  document.getElementById("naposoSakit").innerText = naposoSakit;
-  document.getElementById("naposoAlpha").innerText = naposoAlpha;
-
-  document.getElementById("parguruHadir").innerText = parguruHadir;
-  document.getElementById("parguruIzin").innerText = parguruIzin;
-  document.getElementById("parguruSakit").innerText = parguruSakit;
-  document.getElementById("parguruAlpha").innerText = parguruAlpha;
-});
-
-// DOWNLOAD DENGAN FILTER
-function downloadTXT(){
+// ================= DOWNLOAD LAPORAN TXT =================
+function downloadTXT() {
   const tanggalFilter = document.getElementById("filterTanggal").value;
   const kegiatanFilter = document.getElementById("filterKegiatan").value;
+  
+  // Tampilkan loading
+  const btnDownload = document.getElementById('btnDownload');
+  btnDownload.disabled = true;
+  btnDownload.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyiapkan laporan...';
 
   db.collection("absensi")
-  .orderBy("createdAt","desc")
-  .get()
-  .then(snapshot=>{
-    let textData = "REKAP ABSENSI KEGIATAN\n";
-    textData += "================================\n\n";
-    
-    let ditemukan=false;
-    let naposoHadir=0, naposoIzin=0, naposoSakit=0, naposoAlpha=0;
-    let parguruHadir=0, parguruIzin=0, parguruSakit=0, parguruAlpha=0;
+    .orderBy("createdAt", "desc")
+    .get()
+    .then(snapshot => {
+      // Filter data
+      let filteredData = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        
+        if (tanggalFilter && data.tanggal !== tanggalFilter) return;
+        if (kegiatanFilter && data.kegiatan !== kegiatanFilter) return;
+        
+        filteredData.push(data);
+      });
 
-    snapshot.forEach(doc=>{
-      const data = doc.data();
-
-      if(tanggalFilter && data.tanggal !== tanggalFilter) return;
-      if(kegiatanFilter && data.kegiatan !== kegiatanFilter) return;
-
-      ditemukan=true;
-      
-      // Hitung rekap untuk file
-      const kategori = data.kategori || "";
-      if(kategori === "Naposobulung"){
-        if(data.status==="Hadir") naposoHadir++;
-        if(data.status==="Izin") naposoIzin++;
-        if(data.status==="Sakit") naposoSakit++;
-        if(data.status==="Alpha") naposoAlpha++;
-      } else if(kategori === "Parguru Malua"){
-        if(data.status==="Hadir") parguruHadir++;
-        if(data.status==="Izin") parguruIzin++;
-        if(data.status==="Sakit") parguruSakit++;
-        if(data.status==="Alpha") parguruAlpha++;
+      if (filteredData.length === 0) {
+        alert("Tidak ada data sesuai filter!");
+        btnDownload.disabled = false;
+        btnDownload.innerHTML = '<i class="fas fa-file-alt me-2"></i>Download Laporan (TXT)';
+        return;
       }
 
-      textData += 
-        "Kegiatan : " + (data.kegiatan || '') + "\n" +
-        "Nama     : " + (data.nama || '') + "\n" +
-        "Kategori : " + (data.kategori || '') + "\n" +
-        "Hari     : " + (data.hari || '') + "\n" +
-        "Tanggal  : " + (data.tanggal || '') + "\n" +
-        "Status   : " + (data.status || '') + "\n" +
-        "-----------------------------\n";
+      // Kelompokkan data berdasarkan tanggal dan kegiatan
+      const groupedData = {};
+      filteredData.forEach(data => {
+        const key = `${data.tanggal}|${data.kegiatan}`;
+        if (!groupedData[key]) {
+          groupedData[key] = {
+            tanggal: data.tanggal,
+            hari: data.hari,
+            kegiatan: data.kegiatan,
+            naposoHadir: [],
+            naposoIzin: [],
+            naposoSakit: [],
+            naposoAlpha: [],
+            parguruHadir: [],
+            parguruIzin: [],
+            parguruSakit: [],
+            parguruAlpha: []
+          };
+        }
+        
+        if (data.kategori === "Naposobulung") {
+          if (data.status === "Hadir") groupedData[key].naposoHadir.push(data.nama);
+          else if (data.status === "Izin") groupedData[key].naposoIzin.push(data.nama);
+          else if (data.status === "Sakit") groupedData[key].naposoSakit.push(data.nama);
+          else if (data.status === "Alpha") groupedData[key].naposoAlpha.push(data.nama);
+        } else if (data.kategori === "Parguru Malua") {
+          if (data.status === "Hadir") groupedData[key].parguruHadir.push(data.nama);
+          else if (data.status === "Izin") groupedData[key].parguruIzin.push(data.nama);
+          else if (data.status === "Sakit") groupedData[key].parguruSakit.push(data.nama);
+          else if (data.status === "Alpha") groupedData[key].parguruAlpha.push(data.nama);
+        }
+      });
+
+      // Urutkan nama
+      for (let key in groupedData) {
+        groupedData[key].naposoHadir.sort();
+        groupedData[key].naposoIzin.sort();
+        groupedData[key].naposoSakit.sort();
+        groupedData[key].naposoAlpha.sort();
+        groupedData[key].parguruHadir.sort();
+        groupedData[key].parguruIzin.sort();
+        groupedData[key].parguruSakit.sort();
+        groupedData[key].parguruAlpha.sort();
+      }
+
+      // Buat konten TXT
+      let content = "";
+      
+      // Header
+      content += "========================================\n";
+      content += "     RNHKBP - PELIKAN\n";
+      content += "     LAPORAN ABSENSI KEGIATAN\n";
+      content += "========================================\n\n";
+
+      // Loop setiap kegiatan
+      let first = true;
+      for (const key in groupedData) {
+        const data = groupedData[key];
+        
+        if (!first) {
+          content += "\n\n";
+          content += "----------------------------------------\n\n";
+        }
+        first = false;
+
+        // Format tanggal
+        let tanggalFormatted = data.tanggal;
+        if (data.tanggal) {
+          const parts = data.tanggal.split('-');
+          if (parts.length === 3) {
+            const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+                           'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const tgl = parseInt(parts[2]);
+            const bln = parseInt(parts[1]) - 1;
+            const thn = parts[0];
+            tanggalFormatted = `${tgl} ${bulan[bln]} ${thn}`;
+          }
+        }
+
+        content += `${data.kegiatan}\n`;
+        content += `${data.hari}, ${tanggalFormatted}\n`;
+        content += "----------------------------------------\n\n";
+
+        // NAPOSOBULUNG
+        content += "A. NAPOSOBULUNG\n";
+        content += "----------------\n";
+        
+        content += `✅ HADIR (${data.naposoHadir.length} orang):\n`;
+        if (data.naposoHadir.length > 0) {
+          data.naposoHadir.forEach(nama => {
+            content += `   - ${nama}\n`;
+          });
+        } else {
+          content += `   - Tidak ada\n`;
+        }
+        
+        content += `\n📝 IZIN (${data.naposoIzin.length} orang):\n`;
+        if (data.naposoIzin.length > 0) {
+          data.naposoIzin.forEach(nama => {
+            content += `   - ${nama}\n`;
+          });
+        } else {
+          content += `   - Tidak ada\n`;
+        }
+        
+        content += `\n🤒 SAKIT (${data.naposoSakit.length} orang):\n`;
+        if (data.naposoSakit.length > 0) {
+          data.naposoSakit.forEach(nama => {
+            content += `   - ${nama}\n`;
+          });
+        } else {
+          content += `   - Tidak ada\n`;
+        }
+        
+        content += `\n❌ ALPHA (${data.naposoAlpha.length} orang):\n`;
+        if (data.naposoAlpha.length > 0) {
+          data.naposoAlpha.forEach(nama => {
+            content += `   - ${nama}\n`;
+          });
+        } else {
+          content += `   - Tidak ada\n`;
+        }
+
+        content += "\n";
+
+        // PARGURU MALUA
+        content += "B. PARGURU MALUA\n";
+        content += "----------------\n";
+        
+        content += `✅ HADIR (${data.parguruHadir.length} orang):\n`;
+        if (data.parguruHadir.length > 0) {
+          data.parguruHadir.forEach(nama => {
+            content += `   - ${nama}\n`;
+          });
+        } else {
+          content += `   - Tidak ada\n`;
+        }
+        
+        content += `\n📝 IZIN (${data.parguruIzin.length} orang):\n`;
+        if (data.parguruIzin.length > 0) {
+          data.parguruIzin.forEach(nama => {
+            content += `   - ${nama}\n`;
+          });
+        } else {
+          content += `   - Tidak ada\n`;
+        }
+        
+        content += `\n🤒 SAKIT (${data.parguruSakit.length} orang):\n`;
+        if (data.parguruSakit.length > 0) {
+          data.parguruSakit.forEach(nama => {
+            content += `   - ${nama}\n`;
+          });
+        } else {
+          content += `   - Tidak ada\n`;
+        }
+        
+        content += `\n❌ ALPHA (${data.parguruAlpha.length} orang):\n`;
+        if (data.parguruAlpha.length > 0) {
+          data.parguruAlpha.forEach(nama => {
+            content += `   - ${nama}\n`;
+          });
+        } else {
+          content += `   - Tidak ada\n`;
+        }
+
+        // REKAP
+        const totalNaposoHadir = data.naposoHadir.length;
+        const totalNaposoIzin = data.naposoIzin.length;
+        const totalNaposoSakit = data.naposoSakit.length;
+        const totalNaposoAlpha = data.naposoAlpha.length;
+        const totalNaposo = totalNaposoHadir + totalNaposoIzin + totalNaposoSakit + totalNaposoAlpha;
+        
+        const totalParguruHadir = data.parguruHadir.length;
+        const totalParguruIzin = data.parguruIzin.length;
+        const totalParguruSakit = data.parguruSakit.length;
+        const totalParguruAlpha = data.parguruAlpha.length;
+        const totalParguru = totalParguruHadir + totalParguruIzin + totalParguruSakit + totalParguruAlpha;
+
+        content += "\n";
+        content += "========================================\n";
+        content += "          REKAPITULASI ABSENSI\n";
+        content += "========================================\n";
+        content += "Kategori         H   I   S   A   Total\n";
+        content += "----------------------------------------\n";
+        content += `Naposobulung     ${totalNaposoHadir.toString().padStart(2)} ${totalNaposoIzin.toString().padStart(2)} ${totalNaposoSakit.toString().padStart(2)} ${totalNaposoAlpha.toString().padStart(2)}   ${totalNaposo.toString().padStart(3)}\n`;
+        content += `Parguru Malua    ${totalParguruHadir.toString().padStart(2)} ${totalParguruIzin.toString().padStart(2)} ${totalParguruSakit.toString().padStart(2)} ${totalParguruAlpha.toString().padStart(2)}   ${totalParguru.toString().padStart(3)}\n`;
+        content += "----------------------------------------\n";
+        content += `TOTAL           ${(totalNaposoHadir + totalParguruHadir).toString().padStart(2)} ${(totalNaposoIzin + totalParguruIzin).toString().padStart(2)} ${(totalNaposoSakit + totalParguruSakit).toString().padStart(2)} ${(totalNaposoAlpha + totalParguruAlpha).toString().padStart(2)}   ${(totalNaposo + totalParguru).toString().padStart(3)}\n`;
+      }
+
+      // Footer
+      const now = new Date();
+      const tanggalCetak = now.toLocaleDateString('id-ID', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      content += "\n\n";
+      content += "========================================\n";
+      content += `Dicetak pada: ${tanggalCetak}\n`;
+      content += "Dokumen ini digenerate secara otomatis\n";
+      content += "dari sistem RNHKBP\n";
+      content += "========================================\n";
+
+      // Buat file TXT
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      
+      // Buat nama file
+      let fileName = "Laporan_Absensi_RNHKBP";
+      if (tanggalFilter) fileName += "_" + tanggalFilter;
+      if (kegiatanFilter) fileName += "_" + kegiatanFilter.replace(/ /g, "_");
+      fileName += ".txt";
+      
+      link.download = fileName;
+      link.click();
+      
+      // Bersihkan URL object
+      setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+      }, 100);
+      
+      // Reset button
+      btnDownload.disabled = false;
+      btnDownload.innerHTML = '<i class="fas fa-file-alt me-2"></i>Download Laporan (TXT)';
+    })
+    .catch(error => {
+      console.error("Error downloading:", error);
+      alert("❌ Gagal mendownload: " + error.message);
+      
+      // Reset button
+      btnDownload.disabled = false;
+      btnDownload.innerHTML = '<i class="fas fa-file-alt me-2"></i>Download Laporan (TXT)';
     });
-
-    if(!ditemukan){
-      alert("Data tidak ditemukan sesuai filter!");
-      return;
-    }
-
-    // Tambahkan rekap di akhir file
-    textData += "\n\nREKAP TOTAL ABSENSI\n";
-    textData += "==================\n\n";
-    
-    textData += "NAPOSOBULUNG:\n";
-    textData += "Hadir : " + naposoHadir + "\n";
-    textData += "Izin  : " + naposoIzin + "\n";
-    textData += "Sakit : " + naposoSakit + "\n";
-    textData += "Alpha : " + naposoAlpha + "\n\n";
-    
-    textData += "PARGURU MALUA:\n";
-    textData += "Hadir : " + parguruHadir + "\n";
-    textData += "Izin  : " + parguruIzin + "\n";
-    textData += "Sakit : " + parguruSakit + "\n";
-    textData += "Alpha : " + parguruAlpha + "\n";
-
-    const blob = new Blob([textData], {type:"text/plain"});
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    
-    // Buat nama file dengan filter
-    let fileName = "rekap_absensi";
-    if(tanggalFilter) fileName += "_" + tanggalFilter;
-    if(kegiatanFilter) fileName += "_" + kegiatanFilter;
-    fileName += ".txt";
-    
-    link.download = fileName;
-    link.click();
-  });
 }
+
+// ================= SET TANGGAL DEFAULT =================
+document.addEventListener('DOMContentLoaded', function() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('tanggal').value = today;
+  isiHari();
+});
 </script>
 
 </body>
