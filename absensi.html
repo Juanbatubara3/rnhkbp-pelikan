@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#3b82f6">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RNHKBP Pelikan">
+  <meta name="mobile-web-app-capable" content="yes">
+
   <title>Absensi Kegiatan</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -37,6 +48,41 @@
       border-radius: 20px;
       font-size: 0.8rem;
     }
+    .anggota-search-wrapper {
+      position: relative;
+    }
+    #anggotaDropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 1050;
+      max-height: 260px;
+      overflow-y: auto;
+      display: none;
+      border-radius: 8px;
+      margin-top: -6px;
+    }
+    #anggotaDropdown .list-group-item {
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    #anggotaDropdown .list-group-item small {
+      display: block;
+      color: #6c757d;
+    }
+    .badge-mini {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      color: #fff;
+    }
+    .badge-mini.naposo { background-color: #0d6efd; }
+    .badge-mini.parguru { background-color: #198754; }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -53,6 +99,11 @@
 </nav>
 
 <div class="container mt-4">
+
+  <!-- STATUS KONEKSI / OFFLINE -->
+  <div id="statusKoneksi" class="alert py-2 px-3 d-flex align-items-center" style="display:none;">
+    <span id="statusKoneksiText"></span>
+  </div>
 
   <!-- FORM INPUT -->
   <div class="card p-3 mb-4 shadow">
@@ -71,9 +122,14 @@
       </div>
       <div class="col-md-4">
         <label class="form-label fw-bold">Nama Anggota</label>
-        <select id="anggotaSelect" class="form-control mb-2">
-          <option value="">-- Pilih Anggota --</option>
-        </select>
+        <div class="anggota-search-wrapper">
+          <input type="text" id="anggotaSearch" class="form-control mb-2"
+                 placeholder="🔍 Ketik untuk cari nama..." autocomplete="off"
+                 oninput="filterAnggota()" onfocus="filterAnggota()">
+          <input type="hidden" id="anggotaId">
+          <input type="hidden" id="anggotaKategori">
+          <div id="anggotaDropdown" class="list-group shadow"></div>
+        </div>
       </div>
       <div class="col-md-4">
         <label class="form-label fw-bold">Status</label>
@@ -100,6 +156,50 @@
     <button onclick="simpanAbsensi()" class="btn btn-primary" id="btnSimpan">
       <i class="fas fa-save me-2"></i>Simpan Absensi
     </button>
+  </div>
+
+  <!-- MODAL TAMBAH ANGGOTA BARU -->
+  <div class="modal fade" id="modalTambahAnggota" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fas fa-user-plus me-2 text-success"></i>Tambah Anggota Baru
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted small">Nama tidak ditemukan di daftar. Lengkapi data di bawah untuk menambahkan keanggotaan baru, lalu anggota ini akan otomatis terpilih untuk absensi.</p>
+          <label class="form-label fw-bold">Nama</label>
+          <input type="text" id="newAnggotaNama" class="form-control mb-2" placeholder="Nama lengkap">
+
+          <label class="form-label fw-bold">Weyik</label>
+          <select id="newAnggotaWeyik" class="form-control mb-2">
+            <option value="">Pilih Weyik</option>
+            <option value="Roma">Roma</option>
+            <option value="Kolose">Kolose</option>
+            <option value="Filipi">Filipi</option>
+            <option value="Pilippi">Pilippi</option>
+            <option value="Tesalonika">Tesalonika</option>
+            <option value="Betlehem">Betlehem</option>
+            <option value="Galatia">Galatia</option>
+            <option value="Efesus">Efesus</option>
+          </select>
+
+          <label class="form-label fw-bold">Kategori</label>
+          <select id="newAnggotaKategori" class="form-control mb-2">
+            <option value="Naposobulung">Naposobulung</option>
+            <option value="Parguru Malua">Parguru Malua</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-success" id="btnSimpanAnggotaBaru" onclick="simpanAnggotaBaru()">
+            <i class="fas fa-save me-2"></i>Simpan & Pilih
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- FILTER DAN DOWNLOAD SECTION -->
@@ -232,6 +332,9 @@
 
 </div>
 
+<!-- BOOTSTRAP JS (untuk modal tambah anggota) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -252,6 +355,20 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// ================= AKTIFKAN MODE OFFLINE (Firestore Offline Persistence) =================
+// Absensi yang diisi saat tidak ada internet akan disimpan di perangkat (IndexedDB)
+// dan otomatis terupload ke server begitu internet tersambung lagi — tanpa kode tambahan,
+// ini bawaan Firestore SDK.
+let offlineSiap = true;
+db.enablePersistence({ synchronizeTabs: true }).catch(err => {
+  offlineSiap = false;
+  if (err.code === 'failed-precondition') {
+    console.warn('Mode offline hanya bisa aktif di satu tab. Tutup tab RNHKBP lain yang terbuka.');
+  } else if (err.code === 'unimplemented') {
+    console.warn('Browser ini tidak mendukung penyimpanan offline.');
+  }
+});
+
 // ================= CEK LOGIN =================
 firebase.auth().onAuthStateChanged(user => {
   if (!user) {
@@ -259,25 +376,145 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
-// ================= LOAD ANGGOTA =================
+// ================= LOAD ANGGOTA (untuk pencarian) =================
+let anggotaList = [];
+let anggotaSelectedNama = "";
+
 db.collection("anggota").onSnapshot(snapshot => {
-  let options = '<option value="">-- Pilih Anggota --</option>';
-  
-  if (snapshot.empty) {
-    options = '<option value="">-- Belum ada anggota --</option>';
+  anggotaList = [];
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    if (data && data.nama) {
+      anggotaList.push({
+        id: doc.id,
+        nama: data.nama,
+        kategori: data.kategori || "-",
+        weyik: data.weyik || ""
+      });
+    }
+  });
+  anggotaList.sort((a, b) => a.nama.localeCompare(b.nama, "id"));
+
+  // Refresh dropdown kalau sedang terbuka/sedang diketik
+  const dropdown = document.getElementById("anggotaDropdown");
+  if (dropdown && dropdown.style.display === "block") {
+    filterAnggota();
+  }
+});
+
+// ================= PENCARIAN NAMA ANGGOTA =================
+function filterAnggota() {
+  const input = document.getElementById("anggotaSearch");
+  const query = input.value.trim().toLowerCase();
+  const dropdown = document.getElementById("anggotaDropdown");
+
+  // Kalau teks berubah dari nama yang sudah dipilih sebelumnya, batalkan seleksi
+  if (input.value !== anggotaSelectedNama) {
+    document.getElementById("anggotaId").value = "";
+    document.getElementById("anggotaKategori").value = "";
+  }
+
+  const matches = query
+    ? anggotaList.filter(a => a.nama.toLowerCase().includes(query))
+    : anggotaList;
+
+  let html = "";
+
+  if (matches.length === 0) {
+    html += `<div class="list-group-item text-muted">Anggota tidak ditemukan</div>`;
   } else {
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (data && data.nama && data.kategori) {
-        options += `<option value="${doc.id}|${data.nama}|${data.kategori}">
-          ${data.nama} (${data.kategori})
-        </option>`;
-      }
+    matches.slice(0, 30).forEach(a => {
+      const badgeClass = a.kategori === "Naposobulung" ? "naposo" : "parguru";
+      const namaAman = a.nama.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+      html += `
+        <button type="button" class="list-group-item list-group-item-action"
+                onclick="pilihAnggota('${a.id}', '${namaAman}', '${a.kategori}')">
+          ${a.nama} <span class="badge-mini ${badgeClass} ms-1">${a.kategori}</span>
+          ${a.weyik ? `<small>Weyik: ${a.weyik}</small>` : ""}
+        </button>`;
     });
   }
-  
-  document.getElementById("anggotaSelect").innerHTML = options;
+
+  // Opsi tambah anggota baru selalu muncul kalau user sedang mengetik
+  if (query) {
+    const queryAman = input.value.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    html += `
+      <button type="button" class="list-group-item list-group-item-action list-group-item-success fw-bold"
+              onclick="bukaModalTambahAnggota('${queryAman}')">
+        <i class="fas fa-user-plus me-2"></i>Tambah Anggota Baru: "${input.value}"
+      </button>`;
+  }
+
+  dropdown.innerHTML = html;
+  dropdown.style.display = "block";
+}
+
+function pilihAnggota(id, nama, kategori) {
+  document.getElementById("anggotaSearch").value = nama;
+  document.getElementById("anggotaId").value = id;
+  document.getElementById("anggotaKategori").value = kategori;
+  anggotaSelectedNama = nama;
+  document.getElementById("anggotaDropdown").style.display = "none";
+}
+
+// Tutup dropdown kalau klik di luar area pencarian
+document.addEventListener("click", function (e) {
+  const wrapper = document.querySelector(".anggota-search-wrapper");
+  if (wrapper && !wrapper.contains(e.target)) {
+    document.getElementById("anggotaDropdown").style.display = "none";
+  }
 });
+
+// ================= TAMBAH ANGGOTA BARU (KEANGGOTAAN BARU) =================
+function bukaModalTambahAnggota(namaAwal) {
+  const nama = namaAwal || document.getElementById("anggotaSearch").value;
+  document.getElementById("newAnggotaNama").value = nama
+    .replace(/\b\w/g, c => c.toUpperCase());
+  document.getElementById("newAnggotaWeyik").value = "";
+  document.getElementById("newAnggotaKategori").value = "Naposobulung";
+  document.getElementById("anggotaDropdown").style.display = "none";
+
+  const modal = new bootstrap.Modal(document.getElementById("modalTambahAnggota"));
+  modal.show();
+}
+
+function simpanAnggotaBaru() {
+  const nama = document.getElementById("newAnggotaNama").value.trim();
+  const weyik = document.getElementById("newAnggotaWeyik").value;
+  const kategori = document.getElementById("newAnggotaKategori").value;
+
+  if (!nama) {
+    alert("Nama anggota tidak boleh kosong!");
+    return;
+  }
+
+  const btn = document.getElementById("btnSimpanAnggotaBaru");
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+
+  db.collection("anggota").add({
+    nama: nama,
+    weyik: weyik,
+    kategori: kategori,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  })
+  .then(docRef => {
+    // Otomatis pilih anggota baru ini untuk diabsen
+    pilihAnggota(docRef.id, nama, kategori);
+
+    const modalEl = document.getElementById("modalTambahAnggota");
+    bootstrap.Modal.getInstance(modalEl).hide();
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-save me-2"></i>Simpan & Pilih';
+    alert("✅ Anggota baru berhasil ditambahkan dan langsung terpilih untuk absensi!");
+  })
+  .catch(error => {
+    alert("❌ Gagal menambahkan anggota: " + error.message);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-save me-2"></i>Simpan & Pilih';
+  });
+}
 
 // ================= ISI HARI =================
 function isiHari() {
@@ -292,31 +529,30 @@ function isiHari() {
 // ================= SIMPAN ABSENSI =================
 function simpanAbsensi() {
   const kegiatan = document.getElementById("kegiatan").value;
-  const anggotaSelect = document.getElementById("anggotaSelect").value;
+  const anggotaId = document.getElementById("anggotaId").value;
+  const nama = document.getElementById("anggotaSearch").value.trim();
+  const kategori = document.getElementById("anggotaKategori").value;
   const tanggal = document.getElementById("tanggal").value;
   const hari = document.getElementById("hari").value;
   const status = document.getElementById("status").value;
   
-  if (!anggotaSelect || !tanggal) {
-    alert("Pilih anggota dan tanggal terlebih dahulu!");
+  if (!anggotaId || !nama || !tanggal) {
+    alert("Cari dan pilih anggota dari daftar (atau tambahkan anggota baru), lalu isi tanggal terlebih dahulu!");
     return;
   }
   
-  const anggotaData = anggotaSelect.split("|");
-  if (anggotaData.length < 3) {
-    alert("Data anggota tidak valid!");
-    return;
-  }
-  
-  const anggotaId = anggotaData[0];
-  const nama = anggotaData[1];
-  const kategori = anggotaData[2];
-  
+  const isOnline = navigator.onLine;
   const btnSimpan = document.getElementById('btnSimpan');
   btnSimpan.disabled = true;
-  btnSimpan.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+  btnSimpan.innerHTML = isOnline
+    ? '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...'
+    : '<i class="fas fa-cloud-upload-alt me-2"></i>Menyimpan offline...';
 
-  db.collection("absensi").add({
+  // PENTING: promise ini TIDAK di-await untuk reset form.
+  // Kalau sedang offline, Firestore menyimpan data ini di penyimpanan lokal
+  // perangkat (IndexedDB) dan promise baru "selesai" nanti setelah internet
+  // tersambung lagi & data berhasil terupload ke server — otomatis, tanpa kode tambahan.
+  const tugasSimpan = db.collection("absensi").add({
     kegiatan: kegiatan,
     anggotaId: anggotaId,
     nama: nama,
@@ -325,26 +561,58 @@ function simpanAbsensi() {
     hari: hari,
     status: status,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  })
-  .then(() => {
-    alert("✅ Absensi berhasil disimpan!");
-    
-    document.getElementById("tanggal").value = "";
-    document.getElementById("hari").value = "";
-    document.getElementById("anggotaSelect").value = "";
-    
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById("tanggal").value = today;
-    isiHari();
-    
-    btnSimpan.disabled = false;
-    btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan Absensi';
-  })
-  .catch((error) => {
-    alert("❌ Gagal menyimpan: " + error.message);
-    btnSimpan.disabled = false;
-    btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan Absensi';
   });
+
+  // Reset form & beri feedback SEGERA, tidak menunggu tugasSimpan selesai
+  document.getElementById("tanggal").value = "";
+  document.getElementById("hari").value = "";
+  document.getElementById("anggotaSearch").value = "";
+  document.getElementById("anggotaId").value = "";
+  document.getElementById("anggotaKategori").value = "";
+  anggotaSelectedNama = "";
+  document.getElementById("anggotaDropdown").style.display = "none";
+
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById("tanggal").value = today;
+  isiHari();
+
+  btnSimpan.disabled = false;
+  btnSimpan.innerHTML = '<i class="fas fa-save me-2"></i>Simpan Absensi';
+
+  if (isOnline) {
+    tampilkanToast(`✅ Absensi ${nama} berhasil disimpan!`, 'success');
+  } else {
+    tampilkanToast(`📥 Absensi ${nama} tersimpan offline di perangkat ini. Akan otomatis terupload begitu internet tersambung.`, 'warning');
+  }
+
+  // Kalau ternyata gagal karena alasan lain (bukan sekadar offline), baru beri tahu
+  tugasSimpan.catch((error) => {
+    tampilkanToast("❌ Gagal menyimpan data " + nama + ": " + error.message, 'danger');
+  });
+}
+
+// ================= TOAST NOTIFIKASI RINGAN =================
+function tampilkanToast(pesan, tipe) {
+  let container = document.getElementById('toastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toastContainer';
+    container.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:1090; width:90%; max-width:420px;';
+    document.body.appendChild(container);
+  }
+
+  const warna = { success: 'success', warning: 'warning', danger: 'danger', info: 'info' }[tipe] || 'secondary';
+  const el = document.createElement('div');
+  el.className = `alert alert-${warna} shadow mb-2`;
+  el.style.cssText = 'animation: fadeInDown .3s ease;';
+  el.innerText = pesan;
+  container.appendChild(el);
+
+  setTimeout(() => {
+    el.style.transition = 'opacity .4s ease';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 400);
+  }, 4000);
 }
 
 // ================= HAPUS ABSENSI =================
@@ -374,10 +642,11 @@ function getStatusBadge(status) {
 // ================= TAMPILKAN ABSENSI =================
 db.collection("absensi")
   .orderBy("createdAt", "desc")
-  .onSnapshot(snapshot => {
+  .onSnapshot({ includeMetadataChanges: true }, snapshot => {
     let html = "";
     let naposoHadir = 0, naposoIzin = 0, naposoSakit = 0, naposoAlpha = 0;
     let parguruHadir = 0, parguruIzin = 0, parguruSakit = 0, parguruAlpha = 0;
+    let jumlahPending = 0;
 
     if (snapshot.empty) {
       html = `
@@ -393,6 +662,8 @@ db.collection("absensi")
         const data = doc.data();
         const docId = doc.id;
         const kategori = data.kategori || "";
+        const belumSinkron = doc.metadata.hasPendingWrites;
+        if (belumSinkron) jumlahPending++;
         
         if (kategori === "Naposobulung") {
           if (data.status === "Hadir") naposoHadir++;
@@ -410,8 +681,12 @@ db.collection("absensi")
           '<span class="badge bg-primary">Naposobulung</span>' : 
           '<span class="badge bg-success">Parguru Malua</span>';
         
+        const pendingBadge = belumSinkron
+          ? '<br><span class="badge bg-secondary mt-1"><i class="fas fa-cloud-upload-alt me-1"></i>Menunggu upload</span>'
+          : '';
+
         html += `
-          <tr>
+          <tr${belumSinkron ? ' class="table-warning"' : ''}>
             <td>${data.kegiatan || '-'}</td>
             <td>${data.nama || '-'}</td>
             <td>${kategoriBadge}</td>
@@ -419,6 +694,7 @@ db.collection("absensi")
             <td>${data.tanggal || '-'}</td>
             <td>
               <span class="badge ${getStatusBadge(data.status)}">${data.status || '-'}</span>
+              ${pendingBadge}
             </td>
             <td>
               <button onclick="hapusAbsensi('${docId}')" class="btn btn-danger btn-sm">
@@ -440,21 +716,70 @@ db.collection("absensi")
     document.getElementById("parguruIzin").innerText = parguruIzin;
     document.getElementById("parguruSakit").innerText = parguruSakit;
     document.getElementById("parguruAlpha").innerText = parguruAlpha;
+
+    pendingSyncCount = jumlahPending;
+    updateStatusKoneksi();
   });
+
+// ================= STATUS KONEKSI (ONLINE / OFFLINE / SINKRONISASI) =================
+let pendingSyncCount = 0;
+
+function updateStatusKoneksi() {
+  const box = document.getElementById('statusKoneksi');
+  const text = document.getElementById('statusKoneksiText');
+  const online = navigator.onLine;
+
+  if (online && pendingSyncCount === 0) {
+    box.style.display = 'none';
+    return;
+  }
+
+  box.style.display = 'flex';
+
+  if (!online) {
+    box.className = 'alert alert-warning py-2 px-3 d-flex align-items-center';
+    text.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>
+      <b>Mode Offline</b> — Absensi yang diisi tetap tersimpan di perangkat ini
+      dan akan otomatis terupload begitu internet tersambung lagi.
+      ${pendingSyncCount > 0 ? `<b class="ms-1">(${pendingSyncCount} data menunggu upload)</b>` : ''}`;
+  } else {
+    box.className = 'alert alert-info py-2 px-3 d-flex align-items-center';
+    text.innerHTML = `<i class="fas fa-sync fa-spin me-2"></i>
+      Menyinkronkan ${pendingSyncCount} data absensi ke server...`;
+  }
+}
+
+window.addEventListener('online', () => {
+  updateStatusKoneksi();
+  tampilkanToast('🌐 Internet tersambung kembali. Menyinkronkan data...', 'info');
+});
+window.addEventListener('offline', () => {
+  updateStatusKoneksi();
+  tampilkanToast('📴 Koneksi internet terputus. Absensi tetap bisa diisi secara offline.', 'warning');
+});
+
+document.addEventListener('DOMContentLoaded', updateStatusKoneksi);
 
 // ================= DOWNLOAD LAPORAN TXT =================
 function downloadTXT() {
   const tanggalFilter = document.getElementById("filterTanggal").value;
   const kegiatanFilter = document.getElementById("filterKegiatan").value;
+  const isOnline = navigator.onLine;
   
   // Tampilkan loading
   const btnDownload = document.getElementById('btnDownload');
   btnDownload.disabled = true;
-  btnDownload.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyiapkan laporan...';
+  btnDownload.innerHTML = isOnline
+    ? '<i class="fas fa-spinner fa-spin me-2"></i>Menyiapkan laporan...'
+    : '<i class="fas fa-database me-2"></i>Menyiapkan laporan (offline)...';
+
+  // Kalau offline, langsung ambil dari cache lokal (tidak perlu tunggu timeout server)
+  // Kalau online, coba server dulu; kalau gagal otomatis jatuh ke cache
+  const opsiSumber = isOnline ? {} : { source: 'cache' };
 
   db.collection("absensi")
     .orderBy("createdAt", "desc")
-    .get()
+    .get(opsiSumber)
     .then(snapshot => {
       // Filter data
       let filteredData = [];
@@ -526,7 +851,11 @@ function downloadTXT() {
       content += "========================================\n";
       content += "     RNHKBP - PELIKAN\n";
       content += "     LAPORAN ABSENSI KEGIATAN\n";
-      content += "========================================\n\n";
+      content += "========================================\n";
+      if (!isOnline) {
+        content += "(Dibuat dalam mode OFFLINE - data dari penyimpanan perangkat)\n";
+      }
+      content += "\n";
 
       // Loop setiap kegiatan
       let first = true;
@@ -706,7 +1035,11 @@ function downloadTXT() {
     })
     .catch(error => {
       console.error("Error downloading:", error);
-      alert("❌ Gagal mendownload: " + error.message);
+      if (!isOnline) {
+        alert("❌ Belum ada data tersimpan di perangkat ini untuk diunduh secara offline.\n\nBuka halaman ini minimal sekali saat online agar data absensi tersimpan di perangkat, setelah itu laporan bisa diunduh kapan pun walau tanpa internet.");
+      } else {
+        alert("❌ Gagal mendownload: " + error.message);
+      }
       
       // Reset button
       btnDownload.disabled = false;
@@ -722,5 +1055,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script src="js/pwa-init.js"></script>
 </body>
 </html>
