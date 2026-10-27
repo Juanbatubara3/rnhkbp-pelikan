@@ -13,6 +13,7 @@ const APP_SHELL = [
   "./app.html",
   "./absensi.html",
   "./anggota.html",
+  "./partitur.html",
   "./style.css",
   "./logo.png",
   "./icon-192.png",
