@@ -854,6 +854,8 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="css/kegiatan.css">
+  <script src="js/kegiatan-data.js"></script>
 </head>
 <body>
 
@@ -877,6 +879,9 @@
         </li>
         <li class="nav-item">
           <a class="nav-link" href="dokumentasi-publik.html">Dokumentasi</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#kegiatan">Kegiatan</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="partitur.html">Partitur</a>
@@ -1014,16 +1019,30 @@
 </div>
 
 <!-- RENUNGAN HARIAN SECTION -->
+<!-- ===== KEGIATAN KAMI ===== -->
+<section id="kegiatan" class="kgp-section">
+  <div class="container">
+    <h2 class="section-title">Kegiatan <span>Kami</span></h2>
+    <p class="kgp-sub">Rangkaian pelayanan dan persekutuan yang kami jalani bersama sepanjang tahun.</p>
+    <div class="kgp-list" id="kegiatanList">
+      <div class="text-center text-muted py-4"><span class="spinner-border spinner-border-sm text-primary me-2"></span>Memuat kegiatan…</div>
+    </div>
+    <div class="text-center mt-5">
+      <a class="kgp-cta" href="dokumentasi-publik.html"><i class="fas fa-images me-2"></i>Lihat dokumentasi kegiatan</a>
+    </div>
+  </div>
+</section>
+
 <section id="renungan" class="renungan-section">
   <div class="container">
     <h2 class="section-title">Renungan <span>Harian</span></h2>
     <div class="row g-4" id="renunganContainer">
       <!-- Akan diisi JavaScript -->
     </div>
-    <div class="text-center mt-4">
-      <a href="#" class="btn btn-primary px-4">
+    <div class="text-center mt-4" id="wrapSemuaRenungan" style="display:none;">
+      <button type="button" id="btnSemuaRenungan" class="btn btn-primary px-4">
         Lihat Semua Renungan <i class="fas fa-arrow-right ms-2"></i>
-      </a>
+      </button>
     </div>
   </div>
 </section>
@@ -1177,7 +1196,7 @@
         <p>Kami hadir untuk membangun persekutuan yang saling mengasihi, bertumbuh dalam iman, dan melayani sesama melalui berbagai kegiatan rohani dan sosial. Setiap minggu kami mengadakan Partangiangan dan Latihan Koor sebagai bentuk pelayanan dan persekutuan.</p>
       </div>
       <div class="col-lg-6">
-        <img src="https://via.placeholder.com/500x350?text=NHKBP+Pelikan" class="img-fluid rounded-4 shadow" alt="Tentang Kami">
+        <img id="tentangFoto" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 700'%3E%3Crect width='1000' height='700' fill='%23dbe7ff'/%3E%3Ctext x='500' y='370' font-family='Arial' font-size='84' text-anchor='middle' fill='%232563eb' opacity='.55'%3ENHKBP Pelikan%3C/text%3E%3C/svg%3E" class="img-fluid rounded-4 shadow" alt="Tentang Kami" style="width:100%;aspect-ratio:10/7;object-fit:cover;">
       </div>
     </div>
   </div>
@@ -1248,15 +1267,6 @@
             <a href="https://www.instagram.com/nhkbppelikanrealaccount" target="_blank" class="social-btn">
               <i class="fab fa-instagram"></i>
             </a>
-            <a href="#" class="social-btn">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="#" class="social-btn">
-              <i class="fab fa-twitter"></i>
-            </a>
-            <a href="#" class="social-btn">
-              <i class="fab fa-youtube"></i>
-            </a>
           </div>
         </div>
       </div>
@@ -1309,6 +1319,7 @@
         <ul class="footer-links">
           <li><a href="index.html">Beranda</a></li>
           <li><a href="dokumentasi-publik.html">Dokumentasi</a></li>
+          <li><a href="#kegiatan">Kegiatan</a></li>
           <li><a href="#renungan">Renungan</a></li>
           <li><a href="#profil">Kepengurusan</a></li>
           <li><a href="#tentang">Tentang</a></li>
@@ -1383,9 +1394,6 @@ async function loadStats() {
     const anggotaSnapshot = await db.collection("anggota").get();
     document.getElementById('totalAnggota').textContent = anggotaSnapshot.size;
     
-    const absensiSnapshot = await db.collection("absensi").get();
-    document.getElementById('totalKegiatan').textContent = absensiSnapshot.size;
-    
     const artikelSnapshot = await db.collection("artikel").get();
     document.getElementById('totalArtikel').textContent = artikelSnapshot.size;
     
@@ -1400,12 +1408,60 @@ async function loadStats() {
   }
 }
 
+// ================= LOAD KEGIATAN =================
+const escKg = (t) => String(t == null ? '' : t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const optKg = (u, w) => (u && u.includes('res.cloudinary.com') && u.includes('/upload/') && !/\/upload\/[a-z]_/.test(u)) ? u.replace('/upload/', '/upload/f_auto,q_auto,w_' + w + '/') : u;
+
+function renderKegiatan(items) {
+  const section = document.getElementById('kegiatan');
+  const list = document.getElementById('kegiatanList');
+  if (!items.length) { section.style.display = 'none'; return; }
+  section.style.display = '';
+  list.innerHTML = items.map((k, i) => {
+    const w = window.KEGIATAN_WARNA[i % window.KEGIATAN_WARNA.length];
+    const foto = k.foto ? `<div class="kgp-photo"><img src="${escKg(optKg(k.foto, 700))}" alt="${escKg(k.nama)}" loading="lazy" onerror="this.parentNode.remove()"></div>` : '';
+    const meta = [
+      k.jadwal ? `<span><i class="far fa-clock"></i>${escKg(k.jadwal)}</span>` : '',
+      k.lokasi ? `<span><i class="fas fa-location-dot"></i>${escKg(k.lokasi)}</span>` : ''
+    ].join('');
+    return `<article class="kgp-card" style="--c1:${w[0]};--c2:${w[1]};animation-delay:${i * 70}ms">
+      ${foto}
+      <div class="kgp-inner">
+        <div class="kgp-head"><span class="kgp-ic"><i class="fas ${escKg(k.ikon || 'fa-star')}"></i></span><span class="kgp-num">${String(i + 1).padStart(2, '0')}</span></div>
+        <h3>${escKg(k.nama)}</h3>
+        ${k.deskripsi ? `<p>${escKg(k.deskripsi)}</p>` : ''}
+        ${meta ? `<div class="kgp-meta">${meta}</div>` : ''}
+      </div>
+    </article>`;
+  }).join('');
+}
+
+async function loadKegiatan() {
+  let items = window.KEGIATAN_DEFAULT;      // dipakai selama admin belum menyimpan data sendiri
+  try {
+    const snap = await db.collection("pengurus").doc("kegiatan").get();
+    if (snap.exists && Array.isArray(snap.data().items)) items = snap.data().items;
+  } catch (error) {
+    console.warn("Kegiatan memakai data bawaan:", error.message);
+  }
+  items = items.filter((k) => k && k.nama).slice(0, window.KEGIATAN_MAKS);
+  document.getElementById('totalKegiatan').textContent = items.length;
+  renderKegiatan(items);
+}
+
 // ================= LOAD RENUNGAN =================
-db.collection("renungan")
-  .orderBy("tanggal", "desc")
-  .limit(3)
-  .onSnapshot(snapshot => {
+let renunganSemua = false;
+let renunganUnsub = null;
+
+function listenRenungan() {
+  if (renunganUnsub) renunganUnsub();
+  let query = db.collection("renungan").orderBy("tanggal", "desc");
+  if (!renunganSemua) query = query.limit(4);   // 4 = 3 tampil + 1 untuk tahu apakah masih ada lagi
+
+  renunganUnsub = query.onSnapshot(snapshot => {
     let html = '';
+    const semuaDocs = snapshot.docs;
+    const tampilDocs = renunganSemua ? semuaDocs : semuaDocs.slice(0, 3);
     
     if (snapshot.empty) {
       // Data default jika kosong
@@ -1442,7 +1498,7 @@ db.collection("renungan")
         </div>
       `;
     } else {
-      snapshot.forEach(doc => {
+      tampilDocs.forEach(doc => {
         const data = doc.data();
         html += `
           <div class="col-md-4">
@@ -1459,7 +1515,23 @@ db.collection("renungan")
       });
     }
     document.getElementById('renunganContainer').innerHTML = html;
+
+    // Tombol "Lihat Semua" hanya muncul kalau memang ada lebih dari 3 renungan
+    const wrap = document.getElementById('wrapSemuaRenungan');
+    const btn = document.getElementById('btnSemuaRenungan');
+    wrap.style.display = semuaDocs.length > 3 ? '' : 'none';
+    btn.innerHTML = renunganSemua
+      ? 'Tampilkan Lebih Sedikit <i class="fas fa-arrow-up ms-2"></i>'
+      : 'Lihat Semua Renungan <i class="fas fa-arrow-right ms-2"></i>';
   });
+}
+
+document.getElementById('btnSemuaRenungan').addEventListener('click', () => {
+  renunganSemua = !renunganSemua;
+  listenRenungan();
+  if (!renunganSemua) document.getElementById('renungan').scrollIntoView({ behavior: 'smooth' });
+});
+listenRenungan();
 
 // ================= LOAD KEPENGURUSAN =================
 async function loadKepengurusan() {
@@ -1539,9 +1611,9 @@ db.collection("artikel")
         html += `
           <div class="col-md-4 mb-3">
             <div class="article-card">
-              <img src="${data.foto || 'https://via.placeholder.com/400x200?text=NHKBP'}" 
+              <img src="${data.foto || 'data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 200%27%3E%3Crect width=%27400%27 height=%27200%27 fill=%27%23dbe7ff%27/%3E%3Ctext x=%27200%27 y=%27108%27 font-family=%27Arial%27 font-size=%2725%27 text-anchor=%27middle%27 fill=%27%232563eb%27 opacity=%27.6%27%3ERNHKBP Pelikan%3C/text%3E%3C/svg%3E'}" 
                    class="card-img-top"
-                   onerror="this.src='https://via.placeholder.com/400x200?text=NHKBP'">
+                   onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 400 200%27%3E%3Crect width=%27400%27 height=%27200%27 fill=%27%23dbe7ff%27/%3E%3Ctext x=%27200%27 y=%27108%27 font-family=%27Arial%27 font-size=%2725%27 text-anchor=%27middle%27 fill=%27%232563eb%27 opacity=%27.6%27%3ERNHKBP Pelikan%3C/text%3E%3C/svg%3E'">
               <div class="card-body">
                 <h5 class="card-title">${data.judul || 'Judul Artikel'}</h5>
                 <p class="text-muted small mb-2">${tanggal || ''}</p>
@@ -1566,10 +1638,29 @@ document.getElementById('formPesan')?.addEventListener('submit', function(e) {
   this.reset();
 });
 
+// ================= LOAD FOTO TENTANG KAMI =================
+async function loadTentangFoto() {
+  try {
+    const snap = await db.collection("pengurus").doc("tentang").get();
+    if (snap.exists && snap.data().foto) {
+      let url = snap.data().foto;
+      // Kecilkan & optimalkan otomatis lewat Cloudinary
+      if (url.includes("res.cloudinary.com") && url.includes("/upload/") && !url.includes("/upload/f_auto")) {
+        url = url.replace("/upload/", "/upload/f_auto,q_auto,w_1200/");
+      }
+      document.getElementById('tentangFoto').src = url;
+    }
+  } catch (error) {
+    console.warn("Foto Tentang Kami memakai gambar bawaan:", error.message);
+  }
+}
+
 // ================= LOAD SAAT HALAMAN DIMUAT =================
 document.addEventListener('DOMContentLoaded', () => {
   loadStats();
   loadKepengurusan();
+  loadTentangFoto();
+  loadKegiatan();
 });
 </script>
 

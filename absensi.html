@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#3b82f6">
+  <meta name="theme-color" content="#0e1a33">
   <link rel="apple-touch-icon" href="icon-180.png">
   <link rel="apple-touch-icon" sizes="152x152" href="icon-152.png">
   <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
@@ -84,6 +85,10 @@
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/theme.css">
 </head>
 <body>
 
@@ -372,7 +377,7 @@ db.enablePersistence({ synchronizeTabs: true }).catch(err => {
 // ================= CEK LOGIN =================
 firebase.auth().onAuthStateChanged(user => {
   if (!user) {
-    window.location.href = "index.html";
+    window.location.href = "login.html";
   }
 });
 
